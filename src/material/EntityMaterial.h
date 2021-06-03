@@ -7,7 +7,7 @@
 
 #include "Texture.h"
 class EntityMaterial {
-
+    public:
     Texture colorMap;
 
 };

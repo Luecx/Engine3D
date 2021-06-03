@@ -12,7 +12,7 @@
 class EntitySystem : public RenderSystem<EntityShader, RawModel>{
 
     public:
-    RawModel model{0,0};
+    Entity entity{};
 
 
     bool addElement(RawModel& element) override {
@@ -21,15 +21,27 @@ class EntitySystem : public RenderSystem<EntityShader, RawModel>{
     bool removeElement(RawModel& element) override {
         return false;
     }
+
+    void prepareTexturedModel(TexturedModel& model){
+        glBindVertexArray(entity.texturedModel.rawModel.vaoID);
+        glEnableVertexAttribArray(0);
+    };
+
     void render(Camera& camera) override {
         shader.start();
+        // loading view and projection matrix
         shader.loadVPMatrix(camera.getViewMatrix(), camera.getProjectionMatrix());
-        glPolygonMode(GL_FRONT, GL_LINE);
-        glPolygonMode(GL_BACK, GL_LINE);
-        glDisable(GL_CULL_FACE);
 
-        glBindVertexArray(model.vaoID);
-        glDrawElements(GL_TRIANGLES, model.vertexCount, GL_UNSIGNED_INT, nullptr);
+        // enabling culling
+        glEnable(GL_CULL_FACE);
+
+        // enabling depth testing
+        glEnable(GL_DEPTH_TEST);
+
+        prepareTexturedModel(entity.texturedModel);
+
+        glDrawElements(GL_TRIANGLES, entity.texturedModel.rawModel.vertexCount, GL_UNSIGNED_INT, nullptr );
+
         shader.stop();
     }
 };

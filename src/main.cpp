@@ -3,10 +3,13 @@
 #define GLFW_INCLUDE_NONE
 #include "camera/PerspectiveCamera.h"
 #include "component/GroupableGameObject.h"
+#include "entities/Entity.h"
+#include "entities/TexturedModel.h"
 #include "glad.h"
 #include "loader/OBJLoader.h"
 #include "loader/TextureLoader.h"
 #include "loader/VAOLoader.h"
+#include "material/EntityMaterial.h"
 #include "math/Matrix.h"
 #include "math/Vector.h"
 #include "render/ShaderProgram.h"
@@ -74,20 +77,20 @@ int main(void) {
 
     RawModel     model   = loadOBJ("F:\\OneDrive\\ProgrammSpeicher\\IntelliJ\\3DGameEngine\\res\\models\\cube.obj", false);
     Texture      texture = loadTexture("C:\\Users\\Luecx\\CLionProjects\\Engine3D\\res\\colormaps\\xoK5F.bmp");
-    Texture      texture1 = texture;
-    std::cout << texture.getTextureId() << std::endl;
+    EntityMaterial material{texture};
+    TexturedModel texturedModel{model, material};
+    Entity entity{};
+    entity.texturedModel = texturedModel;
 
     EntitySystem system {};
     system.enable();
-    system.model = model;
+    system.entity = entity;
 
-    glBindVertexArray(model.vaoID);
-    glEnableVertexAttribArray(0);
 
     /* Loop until the user closes the window */
     while (!glfwWindowShouldClose(window)) {
         /* Render here */
-        glClear(GL_COLOR_BUFFER_BIT);
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         system.render(camera);
 
         /* Swap front and back buffers */

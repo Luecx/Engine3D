@@ -32,11 +32,7 @@ Texture::Texture(const Texture& other) {
 }
 
 Texture& Texture::operator=(Texture&& other) {
-
-    if (cleanTexture) {
-        std::cout << "glDeleteTextures " << textureID << std::endl;
-        glDeleteTextures(1, &textureID);
-    }
+    clean();
 
     textureID          = other.textureID;
     cleanTexture       = other.cleanTexture;
@@ -47,11 +43,7 @@ Texture& Texture::operator=(Texture&& other) {
     return *this;
 }
 Texture& Texture::operator=(const Texture& other) {
-
-    if (cleanTexture) {
-        std::cout << "glDeleteTextures " << textureID << std::endl;
-        glDeleteTextures(1, &textureID);
-    }
+    clean();
 
     textureID    = other.textureID;
     cleanTexture = false;
@@ -61,6 +53,10 @@ Texture& Texture::operator=(const Texture& other) {
     return *this;
 }
 Texture::~Texture() {
+    clean();
+}
+
+void Texture::clean(){
     if (cleanTexture) {
         std::cout << "glDeleteTextures " << textureID << std::endl;
         glDeleteTextures(1, &textureID);

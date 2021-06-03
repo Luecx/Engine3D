@@ -44,7 +44,7 @@ add_executable(Engine3D
         src/render/implementations/entities/EntityShader.h
         src/render/implementations/entities/EntitySystem.h
         src/material/EntityMaterial.cpp
-        src/material/EntityMaterial.h)
+        src/material/EntityMaterial.h src/entities/TexturedModel.cpp src/entities/TexturedModel.h src/entities/Entity.cpp src/entities/Entity.h)
 
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DDOUBLE_PRECISION")

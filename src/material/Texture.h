@@ -20,6 +20,9 @@ class Texture {
     int      width;
     int      height;
 
+    private:
+    void clean();
+
     public:
     Texture();
     Texture(GLuint texture_id, int width, int height);
