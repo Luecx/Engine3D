@@ -17,10 +17,10 @@ add_executable(Engine3D
         src/math/Vector.cpp
         src/math/Vector.h
         src/math/Precision.h
-        src/component/ComplexGameObject.cpp
-        src/component/ComplexGameObject.h
-        src/component/GroupableGameObject.cpp
-        src/component/GroupableGameObject.h
+        src/transformation/ComplexGameObject.cpp
+        src/transformation/ComplexGameObject.h
+        src/transformation/GroupableGameObject.cpp
+        src/transformation/GroupableGameObject.h
         src/model/RawModel.cpp
         src/model/RawModel.h
         src/loader/Loader.cpp
@@ -44,7 +44,22 @@ add_executable(Engine3D
         src/render/implementations/entities/EntityShader.h
         src/render/implementations/entities/EntitySystem.h
         src/material/EntityMaterial.cpp
-        src/material/EntityMaterial.h src/entities/TexturedModel.cpp src/entities/TexturedModel.h src/entities/Entity.cpp src/entities/Entity.h)
+        src/material/EntityMaterial.h
+        src/entities/TexturedModel.cpp
+        src/entities/TexturedModel.h
+        src/entities/Entity.cpp
+        src/entities/Entity.h
+        src/transformation/Group.cpp
+        src/transformation/Group.h
+        src/camera/OrthogonalCamera.cpp
+        src/camera/OrthogonalCamera.h
+        src/entities/components/Component.h
+        src/entities/components/Shadow.h
+        src/entities/components/ColorMap.h
+        src/entities/components/LightSource.h
+        src/entities/ECS.cpp
+        src/entities/ECS.h)
+
 
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DDOUBLE_PRECISION")

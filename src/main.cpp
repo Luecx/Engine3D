@@ -1,8 +1,10 @@
 
 
 #define GLFW_INCLUDE_NONE
+#include "camera/OrthogonalCamera.h"
 #include "camera/PerspectiveCamera.h"
-#include "component/GroupableGameObject.h"
+#include "transformation/Group.h"
+#include "transformation/GroupableGameObject.h"
 #include "entities/Entity.h"
 #include "entities/TexturedModel.h"
 #include "glad.h"
@@ -54,37 +56,45 @@ int main(void) {
         return -1;
     }
 
-    PerspectiveCamera camera {};
-    camera.getPosition()[2] = 5;
+    OrthogonalCamera camera {};
+    camera.setLeft(-6);
+    camera.setRight(6);
+    camera.setTop(4);
+    camera.setBottom(-4);
+
+    camera.getPosition()[2] = 3;
     camera.getRotation()[1] = 0;
     camera.getProjectionMatrix();
-    float positions[] = {
-        -0.5f, -0.5f, -0.5,    // 0
-        0.5f,  -0.5f, -0.5,    // 1
-        0.5f,  0.5f,  -0.5,    // 2
-        -0.5f, 0.5f,  -0.5,    // 3
-    };
-    unsigned int       indices[] = {0, 1, 2, 2, 3, 0};
-
-    std::vector<float> pos_vec {};
-    std::vector<int>   indices_vec {};
-    for (int i = 0; i < 12; i++)
-        pos_vec.push_back(positions[i]);
-    for (int i = 0; i < 6; i++)
-        indices_vec.push_back(indices[i]);
 
     //    RawModel model = loadToVao(pos_vec, indices_vec);
 
-    RawModel     model   = loadOBJ("F:\\OneDrive\\ProgrammSpeicher\\IntelliJ\\3DGameEngine\\res\\models\\cube.obj", false);
-    Texture      texture = loadTexture("C:\\Users\\Luecx\\CLionProjects\\Engine3D\\res\\colormaps\\xoK5F.bmp");
+    RawModel     model   = loadOBJ(R"(F:\OneDrive\ProgrammSpeicher\IntelliJ\3DGameEngine\res\models\cube.obj)", false);
+    Texture      texture = loadTexture(R"(C:\Users\Luecx\CLionProjects\Engine3D\res\colormaps\xoK5F.bmp)");
     EntityMaterial material{texture};
     TexturedModel texturedModel{model, material};
-    Entity entity{};
-    entity.texturedModel = texturedModel;
+
 
     EntitySystem system {};
     system.enable();
-    system.entity = entity;
+
+    Group group{};
+
+
+    std::vector<Entity*> entities{};
+    for(int i = 1; i < 2; i++){
+        for(int n = 1; n < 2;n++)
+            for(int j = 1; j < 2;j++){
+            Entity* entity = new Entity();
+            entity->getPosition()[0] = i * 4 - 4;
+            entity->getPosition()[1] = n * 4 - 4;
+            entity->getPosition()[2] = j * 4 - 4;
+            entity->texturedModel = texturedModel;
+            entities.push_back(entity);
+            system.addElement(entity);
+
+            group.addChild(entity);
+        }
+    }
 
 
     /* Loop until the user closes the window */
@@ -96,13 +106,12 @@ int main(void) {
         /* Swap front and back buffers */
         glfwSwapBuffers(window);
 
+        group.getRotation()[1] += 1;
+        group.getRotation()[2] -= 0.6;
+        group.getRotation()[0] += 1.2;
+
         /* Poll for and process events */
         glfwPollEvents();
-        //        camera.getRotation()[1] += 0.01;
-        //        std::cout << camera.getRotation() << std::endl;
-        //        std::cout << camera.getPosition() << std::endl;
-        //        std::cout << camera.getViewMatrix() << std::endl;
-        //        std::cout << camera.getTransformationMatrix() << std::endl;
     }
 
     glfwTerminate();

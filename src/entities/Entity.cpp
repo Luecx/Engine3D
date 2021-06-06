@@ -3,3 +3,7 @@
 //
 
 #include "Entity.h"
+
+
+
+ecs::ECS ecs::ecs{};

@@ -9,22 +9,40 @@
 #include "../../../model/RawModel.h"
 #include "EntityShader.h"
 
-class EntitySystem : public RenderSystem<EntityShader, RawModel>{
+class EntitySystem : public RenderSystem<EntityShader, Entity>{
+
+
+    std::unordered_map<int, std::vector<Entity*>> entities{};
 
     public:
-    Entity entity{};
 
 
-    bool addElement(RawModel& element) override {
-        return false;
+//    Entity entity{};
+
+
+    bool addElement(Entity* element) override {
+        int hash = element->texturedModel.material.colorMap.getTextureId() * 8192 + element->texturedModel.rawModel.vaoID;
+        if(entities.find(hash) == entities.end()){
+            entities[hash] = {};
+            entities[hash].emplace_back(element);
+        }else{
+            entities[hash].emplace_back(element);
+        }
+        return true;
     }
-    bool removeElement(RawModel& element) override {
-        return false;
+    bool removeElement(Entity* element) override {
+        return true;
     }
 
     void prepareTexturedModel(TexturedModel& model){
-        glBindVertexArray(entity.texturedModel.rawModel.vaoID);
+        glBindVertexArray(model.rawModel.vaoID);
         glEnableVertexAttribArray(0);
+        glEnableVertexAttribArray(1);
+        glEnableVertexAttribArray(2);
+
+        glActiveTexture(GL_TEXTURE0);
+        glBindTexture(GL_TEXTURE_2D, model.material.colorMap.getTextureId());
+
     };
 
     void render(Camera& camera) override {
@@ -38,9 +56,23 @@ class EntitySystem : public RenderSystem<EntityShader, RawModel>{
         // enabling depth testing
         glEnable(GL_DEPTH_TEST);
 
-        prepareTexturedModel(entity.texturedModel);
+        for(auto& pair:entities){
 
-        glDrawElements(GL_TRIANGLES, entity.texturedModel.rawModel.vertexCount, GL_UNSIGNED_INT, nullptr );
+            if(pair.second.size() == 0){
+                continue;
+            }
+
+            prepareTexturedModel(pair.second.at(0)->texturedModel);
+
+            for(Entity *e:pair.second){
+                shader.loadTransformationMatrix(e->getAbsoluteTransformationMatrix());
+
+                glDrawElements(GL_TRIANGLES, e->texturedModel.rawModel.vertexCount, GL_UNSIGNED_INT, nullptr );
+            }
+
+        }
+
+
 
         shader.stop();
     }

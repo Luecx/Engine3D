@@ -22,6 +22,9 @@ Vector<3>& GroupableGameObject::getAbsolutePosition() {
     return absolutePosition;
 }
 void GroupableGameObject::setAbsoluteOutdated() {
+    for(GroupableGameObject* g:childs){
+        g->setAbsoluteOutdated();
+    }
     this->absoluteOutdated = true;
     absoluteDataChangedNotification();
 }
@@ -34,7 +37,7 @@ bool GroupableGameObject::setParent(GroupableGameObject* parent) {
     }
     this->parent = parent;
     this->parent->childs.push_back(this);
-    this->absoluteOutdated = true;
+    setAbsoluteOutdated();
     return true;
 }
 bool GroupableGameObject::removeParent() {
@@ -45,11 +48,11 @@ bool GroupableGameObject::removeParent() {
         std::remove(this->parent->childs.begin(), this->parent->childs.end(), this),
         this->parent->childs.end());
     this->parent           = nullptr;
-    this->absoluteOutdated = true;
+    setAbsoluteOutdated();
     return true;
 }
 bool GroupableGameObject::addChild(GroupableGameObject* child) {
-    return setParent(this);
+    return child->setParent(this);
 }
 bool GroupableGameObject::removeChild(GroupableGameObject* child) {
     return child->removeParent();
@@ -61,7 +64,8 @@ void GroupableGameObject::dataChangedNotification() {
     this->setAbsoluteOutdated();
 }
 void GroupableGameObject::updateAbsoluteTransformationMatrix() {
-    if (this->parent == nullptr && this->absoluteOutdated) {
+    if(!this->absoluteOutdated) return;
+    if (this->parent == nullptr) {
         this->absoluteTransformationMatrix = this->getTransformationMatrix();
         this->absolutePosition             = this->position;
         this->absoluteOutdated             = false;

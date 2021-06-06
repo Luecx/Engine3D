@@ -5,7 +5,7 @@
 #ifndef ENGINE3D_SRC_CAMERA_CAMERA_H_
 #define ENGINE3D_SRC_CAMERA_CAMERA_H_
 
-#include "../component/GroupableGameObject.h"
+#include "../transformation/GroupableGameObject.h"
 
 class Camera : public GroupableGameObject {
 

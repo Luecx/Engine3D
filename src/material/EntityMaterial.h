@@ -9,6 +9,7 @@
 class EntityMaterial {
     public:
     Texture colorMap;
+    Texture normalMap;
 
 };
 

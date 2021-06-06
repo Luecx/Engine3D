@@ -36,7 +36,7 @@ uint8_t* loadBMP(const std::string& file, int& width, int& height){
 
     // Some BMP files are misformatted, guess missing information
     if (imageSize == 0)
-        imageSize = width * height * 3;    // 3 : one byte for each Red, Green and Blue component
+        imageSize = width * height * 3;    // 3 : one byte for each Red, Green and Blue transformation
     if (dataPos == 0)
         dataPos = 54;    // The BMP header is done that way
 
