@@ -5,13 +5,13 @@
 #ifndef ENGINE3D_SRC_ENTITIES_ENTITY_H_
 #define ENGINE3D_SRC_ENTITIES_ENTITY_H_
 
-#include "../component/GroupableGameObject.h"
+#include "../transformation/GroupableGameObject.h"
 #include "TexturedModel.h"
+
 class Entity : public GroupableGameObject {
 
     public:
-    TexturedModel texturedModel{};
-
+    TexturedModel texturedModel;
 };
 
 #endif    // ENGINE3D_SRC_ENTITIES_ENTITY_H_

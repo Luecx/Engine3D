@@ -29,18 +29,11 @@ class PerspectiveCamera : public Camera {
         Precision xScale         = yScale / aspectRatio;
         Precision frustumLength  = farPlane - nearPlane;
 
-//        projectionMatrix(0,0) = xScale;
-//        projectionMatrix(1,1) = yScale;
-//        projectionMatrix(2,2) = -((farPlane + nearPlane) / frustumLength);
-//        projectionMatrix(3,2) = -1;
-//        projectionMatrix(2,3) = -((2 * nearPlane * farPlane) / frustumLength);
         projectionMatrix(0,0) = xScale;
         projectionMatrix(1,1) = yScale;
         projectionMatrix(2,2) = -(farPlane+nearPlane) / frustumLength;
         projectionMatrix(3,2) = -1;
         projectionMatrix(2,3) = - 2 * nearPlane * farPlane / frustumLength;
-//        projectionMatrix(3,3) = 1;
-//        projectionMatrix(3,3) = 1;
     }
 
     float getFov() const {
@@ -48,6 +41,7 @@ class PerspectiveCamera : public Camera {
     }
     void setFov(float fov) {
         fov = fov;
+        projectionMatrixOutdated = true;
     }
 };
 

@@ -19,8 +19,8 @@ template<typename Shader, typename Element> class RenderSystem {
         return shader.isCreated();
     }
 
-    virtual bool addElement(Element& element)    = 0;
-    virtual bool removeElement(Element& element) = 0;
+    virtual bool addElement(Element* element)    = 0;
+    virtual bool removeElement(Element* element) = 0;
     virtual void render(Camera& camera)          = 0;
 };
 

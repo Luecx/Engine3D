@@ -164,9 +164,9 @@ RawModel loadOBJ(const std::string& objFileName, bool computeTangents) {
         finalTextureCoords.push_back(textureCoords[v.textureIndex][0]);
         finalTextureCoords.push_back(textureCoords[v.textureIndex][1]);
 
-        finalNormals.push_back(textureCoords[v.normalIndex][0]);
-        finalNormals.push_back(textureCoords[v.normalIndex][1]);
-        finalNormals.push_back(textureCoords[v.normalIndex][2]);
+        finalNormals.push_back(normals[v.normalIndex][0]);
+        finalNormals.push_back(normals[v.normalIndex][1]);
+        finalNormals.push_back(normals[v.normalIndex][2]);
 
         finalTangents.push_back(v.averagedTangent[0]);
         finalTangents.push_back(v.averagedTangent[1]);
