@@ -5,12 +5,12 @@
 #ifndef ENGINE3D_COMPONENT_GROUPABLEGAMEOBJECT_H_
 #define ENGINE3D_COMPONENT_GROUPABLEGAMEOBJECT_H_
 
-#include "ComplexGameObject.h"
-class GroupableGameObject : public ComplexGameObject {
+#include "Transformation.h"
+class ComplexTransformation : public Transformation {
 
     private:
-    GroupableGameObject*              parent = nullptr;
-    std::vector<GroupableGameObject*> childs {};
+    ComplexTransformation*              parent = nullptr;
+    std::vector<ComplexTransformation*> childs {};
 
     Matrix<4, 4>                      absoluteTransformationMatrix {};
     Vector<3>                         absolutePosition {};
@@ -18,8 +18,10 @@ class GroupableGameObject : public ComplexGameObject {
     bool                              absoluteOutdated = true;
 
     public:
-    GroupableGameObject(const Vector<3>& position = {}, const Vector<3>& rotation = {},
+    ComplexTransformation(const Vector<3>& position = {}, const Vector<3>& rotation = {},
                         const Vector<3>& scale = {1, 1, 1});
+
+    virtual ~ComplexTransformation();
 
     Matrix<4, 4>&                     getAbsoluteTransformationMatrix();
 
@@ -29,15 +31,15 @@ class GroupableGameObject : public ComplexGameObject {
 
     bool                              hasParent();
 
-    bool                              setParent(GroupableGameObject* parent);
+    bool                              setParent(ComplexTransformation* parent);
 
     bool                              removeParent();
 
-    bool                              addChild(GroupableGameObject* child);
+    bool                              addChild(ComplexTransformation* child);
 
-    bool                              removeChild(GroupableGameObject* child);
+    bool                              removeChild(ComplexTransformation* child);
 
-    std::vector<GroupableGameObject*> getChilds();
+    std::vector<ComplexTransformation*> getChilds();
 
     protected:
     virtual void absoluteDataChangedNotification() {};

@@ -6,7 +6,9 @@
 #define ENGINE3D_SRC_RENDER_RENDERSYSTEM_H_
 
 #include "../camera/Camera.h"
-template<typename Shader, typename Element> class RenderSystem {
+#include "../ecs/ecs.h"
+
+template<typename Shader> class RenderSystem {
 
     protected:
     Shader shader {};
@@ -19,9 +21,7 @@ template<typename Shader, typename Element> class RenderSystem {
         return shader.isCreated();
     }
 
-    virtual bool addElement(Element* element)    = 0;
-    virtual bool removeElement(Element* element) = 0;
-    virtual void render(Camera& camera)          = 0;
+    virtual void render(Camera& camera, ecs::ECS* ecs) = 0;
 };
 
 #endif    // ENGINE3D_SRC_RENDER_RENDERSYSTEM_H_

@@ -5,9 +5,9 @@
 #ifndef ENGINE3D_SRC_CAMERA_CAMERA_H_
 #define ENGINE3D_SRC_CAMERA_CAMERA_H_
 
-#include "../transformation/GroupableGameObject.h"
+#include "../transformation/ComplexTransformation.h"
 
-class Camera : public GroupableGameObject {
+class Camera : public ComplexTransformation {
 
     public:
     virtual Matrix<4, 4>& getViewMatrix();

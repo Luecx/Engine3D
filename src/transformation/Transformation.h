@@ -9,7 +9,7 @@
 #include "../math/Vector.h"
 #include "math.h"
 
-struct ComplexGameObject {
+struct Transformation {
 
     protected:
     Vector<3>    position {};
@@ -20,7 +20,7 @@ struct ComplexGameObject {
     Matrix<4, 4> transformationMatrix {};
 
     public:
-    ComplexGameObject(const Vector<3>& position={}, const Vector<3>& rotation={}, const Vector<3>& scale={1,1,1});
+    Transformation(const Vector<3>& position={}, const Vector<3>& rotation={}, const Vector<3>& scale={1,1,1});
 
     Matrix<4, 4>& getTransformationMatrix();
 

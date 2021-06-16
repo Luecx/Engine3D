@@ -20,6 +20,6 @@ Matrix<4, 4>& Camera::getProjectionMatrix() {
     return projectionMatrix;
 }
 void Camera::absoluteDataChangedNotification() {
-    GroupableGameObject::absoluteDataChangedNotification();
+    ComplexTransformation::absoluteDataChangedNotification();
     viewMatrixOutdated = true;
 }

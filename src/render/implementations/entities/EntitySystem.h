@@ -9,36 +9,27 @@
 #include "../../RenderSystem.h"
 #include "EntityShader.h"
 
-class EntitySystem : public RenderSystem<EntityShader, Entity> {
-
-    std::unordered_map<int, std::vector<Entity*>> entities {};
+class EntitySystem : public RenderSystem<EntityShader> {
 
     public:
-    bool addElement(Entity* element) override {
-        int hash = element->texturedModel.material.colorMap.getTextureId() * 8192 + element->texturedModel.rawModel.vaoID;
-        if (entities.find(hash) == entities.end()) {
-            entities[hash] = {};
-            entities[hash].emplace_back(element);
-        } else {
-            entities[hash].emplace_back(element);
-        }
-        return true;
-    }
-    bool removeElement(Entity* element) override {
-        return true;
-    }
 
-    void prepareTexturedModel(TexturedModel& model) {
-        glBindVertexArray(model.rawModel.vaoID);
+    void prepareTexturedModel(RawModel& rawModel, ColorMap& colorMap) {
+        glBindVertexArray(rawModel.vaoID);
         glEnableVertexAttribArray(0);
         glEnableVertexAttribArray(1);
         glEnableVertexAttribArray(2);
 
         glActiveTexture(GL_TEXTURE0);
-        glBindTexture(GL_TEXTURE_2D, model.material.colorMap.getTextureId());
+        glBindTexture(GL_TEXTURE_2D, colorMap.getTextureId());
     };
 
-    void render(Camera& camera) override {
+    void prepareLights(ecs::ECS* ecs){
+        for (auto& entity : ecs->each<LightSource>()) {
+
+        }
+    }
+
+    void render(Camera& camera, ecs::ECS* ecs) override {
         shader.start();
         // loading view and projection matrix
         shader.loadVPMatrix(camera.getViewMatrix(), camera.getProjectionMatrix());
@@ -49,19 +40,14 @@ class EntitySystem : public RenderSystem<EntityShader, Entity> {
         // enabling depth testing
         glEnable(GL_DEPTH_TEST);
 
-        for (auto& pair : entities) {
+        for (auto& entity : ecs->each<ComplexTransformation, RawModel, ColorMap>()) {
 
-            if (pair.second.size() == 0) {
-                continue;
-            }
+            prepareTexturedModel(entity->get<RawModel>().get(), entity->get<ColorMap>().get());
 
-            prepareTexturedModel(pair.second.at(0)->texturedModel);
+            shader.loadTransformationMatrix(entity->get<ComplexTransformation>()->getAbsoluteTransformationMatrix());
 
-            for (Entity* e : pair.second) {
-                shader.loadTransformationMatrix(e->getAbsoluteTransformationMatrix());
+            glDrawElements(GL_TRIANGLES, entity->get<RawModel>()->vertexCount, GL_UNSIGNED_INT, nullptr);
 
-                glDrawElements(GL_TRIANGLES, e->texturedModel.rawModel.vertexCount, GL_UNSIGNED_INT, nullptr);
-            }
         }
 
         shader.stop();

@@ -2,16 +2,16 @@
 // Created by Luecx on 31.05.2021.
 //
 
-#include "ComplexGameObject.h"
+#include "Transformation.h"
 
 #include <iostream>
 
-ComplexGameObject::ComplexGameObject(const Vector<3>& position, const Vector<3>& rotation,
+Transformation::Transformation(const Vector<3>& position, const Vector<3>& rotation,
                                      const Vector<3>& scale)
     : position(position), rotation(rotation), scale(scale) {
 }
 
-Matrix<4, 4>& ComplexGameObject::getTransformationMatrix() {
+Matrix<4, 4>& Transformation::getTransformationMatrix() {
     if (outdated) {
         outdated = false;
         updateTransformationMatrix();
@@ -19,37 +19,37 @@ Matrix<4, 4>& ComplexGameObject::getTransformationMatrix() {
     return this->transformationMatrix;
 }
 
-void ComplexGameObject::setOutdated() {
+void Transformation::setOutdated() {
     outdated = true;
     dataChangedNotification();
 }
 
-Vector<3>& ComplexGameObject::getPosition() {
+Vector<3>& Transformation::getPosition() {
     setOutdated();
     return position;
 }
-Vector<3>& ComplexGameObject::getRotation() {
+Vector<3>& Transformation::getRotation() {
     setOutdated();
     return rotation;
 }
-Vector<3>& ComplexGameObject::getScale() {
+Vector<3>& Transformation::getScale() {
     setOutdated();
     return scale;
 }
-void ComplexGameObject::setPosition(const Vector<3>& position) {
+void Transformation::setPosition(const Vector<3>& position) {
     setOutdated();
-    ComplexGameObject::position = position;
+    Transformation::position = position;
 }
-void ComplexGameObject::setRotation(const Vector<3>& rotation) {
+void Transformation::setRotation(const Vector<3>& rotation) {
     setOutdated();
-    ComplexGameObject::rotation = rotation;
+    Transformation::rotation = rotation;
 }
-void ComplexGameObject::setScale(const Vector<3>& scale) {
+void Transformation::setScale(const Vector<3>& scale) {
     setOutdated();
-    ComplexGameObject::scale = scale;
+    Transformation::scale = scale;
 }
 
-void ComplexGameObject::updateTransformationMatrix() {
+void Transformation::updateTransformationMatrix() {
     transformationMatrix.identity();
     transformationMatrix.translate3D(position);
     transformationMatrix.rotate3D(rotation[0] * M_PI / 180, {1, 0, 0});

@@ -7,6 +7,8 @@
 
 #include "../../ShaderProgram.h"
 
+#define MAX_LIGHTS_ENTITY_SHADER 4
+
 class EntityShader : public ShaderProgram {
 
     private:
@@ -14,6 +16,11 @@ class EntityShader : public ShaderProgram {
     int               loc_transformationMatrix;
     int               loc_viewMatrix;
     int               loc_projectionMatrix;
+    int               loc_lightCount;
+    int               loc_lightPosition[MAX_LIGHTS_ENTITY_SHADER];
+    int               loc_lightColor   [MAX_LIGHTS_ENTITY_SHADER];
+    int               loc_lightFactors [MAX_LIGHTS_ENTITY_SHADER];
+
 
     public:
     EntityShader() : ShaderProgram(
@@ -27,6 +34,13 @@ class EntityShader : public ShaderProgram {
         loc_transformationMatrix = ShaderProgram::getUniformLocation("transformationMatrix");
         loc_viewMatrix           = ShaderProgram::getUniformLocation("viewMatrix");
         loc_projectionMatrix     = ShaderProgram::getUniformLocation("projectionMatrix");
+        loc_lightCount           = ShaderProgram::getUniformLocation("lightCount");
+        for(int i = 0; i < MAX_LIGHTS_ENTITY_SHADER; i++){
+            loc_lightPosition[i] = ShaderProgram::getUniformLocation("lights[" + std::to_string(i) + "].position");
+            loc_lightColor   [i] = ShaderProgram::getUniformLocation("lights[" + std::to_string(i) + "].color");
+            loc_lightFactors [i] = ShaderProgram::getUniformLocation("lights[" + std::to_string(i) + "].factors");
+        }
+
     }
     void bindAttributes() override {
         ShaderProgram::bindAttributes();

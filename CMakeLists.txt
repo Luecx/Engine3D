@@ -17,16 +17,10 @@ add_executable(Engine3D
         src/math/Vector.cpp
         src/math/Vector.h
         src/math/Precision.h
-        src/transformation/ComplexGameObject.cpp
-        src/transformation/ComplexGameObject.h
-        src/transformation/GroupableGameObject.cpp
-        src/transformation/GroupableGameObject.h
         src/model/RawModel.cpp
         src/model/RawModel.h
         src/loader/Loader.cpp
         src/loader/Loader.h
-        src/material/Texture.cpp
-        src/material/Texture.h
         src/loader/TextureLoader.h
         src/loader/TextureLoader.cpp
         src/loader/VAOLoader.h
@@ -43,16 +37,18 @@ add_executable(Engine3D
         src/camera/PerspectiveCamera.h
         src/render/implementations/entities/EntityShader.h
         src/render/implementations/entities/EntitySystem.h
+        src/material/Texture.cpp
+        src/material/Texture.h
         src/material/EntityMaterial.cpp
         src/material/EntityMaterial.h
-        src/entities/TexturedModel.cpp
-        src/entities/TexturedModel.h
-        src/entities/Entity.cpp
-        src/entities/Entity.h
-        src/transformation/Group.cpp
-        src/transformation/Group.h
+        src/material/ColorMap.h
+        src/material/ColorMap.cpp
+        src/material/NormalMap.h
+        src/material/NormalMap.cpp
         src/camera/OrthogonalCamera.cpp
-        src/camera/OrthogonalCamera.h src/light/LightSource.cpp src/light/LightSource.h src/render/MasterSystem.cpp src/render/MasterSystem.h
+        src/camera/OrthogonalCamera.h
+        src/render/MasterSystem.cpp
+        src/render/MasterSystem.h
         src/ecs/core.h
         src/ecs/assign.h
         src/ecs/component.h
@@ -62,7 +58,13 @@ add_executable(Engine3D
         src/ecs/hash.h
         src/ecs/iterator.h
         src/ecs/system.h
-        src/ecs/types.h)
+        src/ecs/types.h
+        src/components/LightSource.h
+        src/components/LightSource.cpp
+        src/transformation/Transformation.h
+        src/transformation/Transformation.cpp
+        src/transformation/ComplexTransformation.h
+        src/transformation/ComplexTransformation.cpp)
 
 
 

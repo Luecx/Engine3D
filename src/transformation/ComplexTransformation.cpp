@@ -2,36 +2,36 @@
 // Created by Luecx on 31.05.2021.
 //
 
-#include "GroupableGameObject.h"
+#include "ComplexTransformation.h"
 
 #include <iostream>
-GroupableGameObject::GroupableGameObject(const Vector<3>& position, const Vector<3>& rotation,
+ComplexTransformation::ComplexTransformation(const Vector<3>& position, const Vector<3>& rotation,
                                          const Vector<3>& scale)
-    : ComplexGameObject(position, rotation, scale) {
+    : Transformation(position, rotation, scale) {
 }
-Matrix<4, 4>& GroupableGameObject::getAbsoluteTransformationMatrix() {
+Matrix<4, 4>& ComplexTransformation::getAbsoluteTransformationMatrix() {
     if (this->absoluteOutdated) {
         updateAbsoluteTransformationMatrix();
     }
     return absoluteTransformationMatrix;
 }
-Vector<3>& GroupableGameObject::getAbsolutePosition() {
+Vector<3>& ComplexTransformation::getAbsolutePosition() {
     if (this->absoluteOutdated) {
         updateAbsoluteTransformationMatrix();
     }
     return absolutePosition;
 }
-void GroupableGameObject::setAbsoluteOutdated() {
-    for(GroupableGameObject* g:childs){
+void ComplexTransformation::setAbsoluteOutdated() {
+    for(ComplexTransformation* g:childs){
         g->setAbsoluteOutdated();
     }
     this->absoluteOutdated = true;
     absoluteDataChangedNotification();
 }
-bool GroupableGameObject::hasParent() {
+bool ComplexTransformation::hasParent() {
     return (this->parent != nullptr);
 }
-bool GroupableGameObject::setParent(GroupableGameObject* parent) {
+bool ComplexTransformation::setParent(ComplexTransformation* parent) {
     if (this->parent == parent || std::find(childs.begin(), childs.end(), parent) != childs.end()) {
         return false;
     }
@@ -40,7 +40,7 @@ bool GroupableGameObject::setParent(GroupableGameObject* parent) {
     setAbsoluteOutdated();
     return true;
 }
-bool GroupableGameObject::removeParent() {
+bool ComplexTransformation::removeParent() {
     if (this->parent == nullptr) {
         return false;
     }
@@ -51,19 +51,19 @@ bool GroupableGameObject::removeParent() {
     setAbsoluteOutdated();
     return true;
 }
-bool GroupableGameObject::addChild(GroupableGameObject* child) {
+bool ComplexTransformation::addChild(ComplexTransformation* child) {
     return child->setParent(this);
 }
-bool GroupableGameObject::removeChild(GroupableGameObject* child) {
+bool ComplexTransformation::removeChild(ComplexTransformation* child) {
     return child->removeParent();
 }
-std::vector<GroupableGameObject*> GroupableGameObject::getChilds() {
+std::vector<ComplexTransformation*> ComplexTransformation::getChilds() {
     return this->childs;
 }
-void GroupableGameObject::dataChangedNotification() {
+void ComplexTransformation::dataChangedNotification() {
     this->setAbsoluteOutdated();
 }
-void GroupableGameObject::updateAbsoluteTransformationMatrix() {
+void ComplexTransformation::updateAbsoluteTransformationMatrix() {
     if(!this->absoluteOutdated) return;
     if (this->parent == nullptr) {
         this->absoluteTransformationMatrix = this->getTransformationMatrix();
@@ -81,5 +81,10 @@ void GroupableGameObject::updateAbsoluteTransformationMatrix() {
         this->absolutePosition[0] = this->absoluteTransformationMatrix(3, 1);
         this->absolutePosition[0] = this->absoluteTransformationMatrix(3, 2);
         this->absoluteOutdated    = false;
+    }
+}
+ComplexTransformation::~ComplexTransformation() {
+    for(int i = childs.size()-1; i>=0; i--){
+        childs[i]->removeParent();
     }
 }
