@@ -14,5 +14,5 @@ void main()
 
     vec3 h = surfaceNormal;
 
-    color = vec4(h,1.0);
+    color = textureColour;
 }

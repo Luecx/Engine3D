@@ -52,13 +52,17 @@ add_executable(Engine3D
         src/transformation/Group.cpp
         src/transformation/Group.h
         src/camera/OrthogonalCamera.cpp
-        src/camera/OrthogonalCamera.h
-        src/entities/components/Component.h
-        src/entities/components/Shadow.h
-        src/entities/components/ColorMap.h
-        src/entities/components/LightSource.h
-        src/entities/ECS.cpp
-        src/entities/ECS.h)
+        src/camera/OrthogonalCamera.h src/light/LightSource.cpp src/light/LightSource.h src/render/MasterSystem.cpp src/render/MasterSystem.h
+        src/ecs/core.h
+        src/ecs/assign.h
+        src/ecs/component.h
+        src/ecs/core.h
+        src/ecs/entity.h
+        src/ecs/event.h
+        src/ecs/hash.h
+        src/ecs/iterator.h
+        src/ecs/system.h
+        src/ecs/types.h)
 
 
 
