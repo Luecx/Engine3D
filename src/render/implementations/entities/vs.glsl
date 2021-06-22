@@ -7,19 +7,34 @@ layout(location = 2) in vec3 normal;
 
 out vec2 pass_textureCoords;
 out vec3 surfaceNormal;
-out vec4 worldPosition;
+out vec3 toLightVector[4];
 
 uniform mat4 transformationMatrix;
 uniform mat4 viewMatrix;
 uniform mat4 projectionMatrix;
 
+
+struct LightSource
+{
+    vec3 position;
+    vec3 color;
+    vec3 factors;
+};
+
+uniform LightSource lights[4];
+uniform int lightCount;
+
 void main()
 {
-    //    gl_Position = projectionMatrix * viewMatrix * transformationMatrix * position;
-    worldPosition       = transformationMatrix * vec4(position, 1.0);
+
+    vec4 worldPosition = transformationMatrix * vec4(position,1.0);
+
     gl_Position         = projectionMatrix * viewMatrix * worldPosition;
     pass_textureCoords  = textureCoords;
     surfaceNormal       = (transformationMatrix * vec4(normal, 0.0)).xyz;
-    //    gl_Position.z = -0.9;
-    //    gl_Position.w = 0.3;
+
+    for(int i=0;i<lightCount;i++){
+        toLightVector[i] = lights[i].position - worldPosition.xyz;
+    }
+
 }

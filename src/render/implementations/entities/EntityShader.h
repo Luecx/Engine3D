@@ -55,7 +55,14 @@ class EntityShader : public ShaderProgram {
     void loadVPMatrix(Matrix<4,4> &viewMatrix,Matrix<4,4> &projectionMatrix){
         loadMatrix(loc_viewMatrix, viewMatrix);
         loadMatrix(loc_projectionMatrix, projectionMatrix);
-
+    }
+    void loadLightCount(int count){
+        loadInt(loc_lightCount, count);
+    }
+    void loadLight(int index, Vector<3>& position, Vector<3>& color, Vector<3>& factors){
+        loadVector(loc_lightPosition[index], position);
+        loadVector(loc_lightColor   [index], color);
+        loadVector(loc_lightFactors [index], factors);
     }
 };
 

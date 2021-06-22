@@ -7,24 +7,78 @@
 
 #include "../components/LightSource.h"
 #include "../ecs/ecs.h"
+#include "../glad.h"
+#include "implementations/entities/EntitySystem.h"
 
+#include <GLFW/glfw3.h>
 #include <vector>
 class MasterSystem {
 
+    public:
+    ecs::ECS     ecs {};
+    ecs::Entity* system;
+    GLFWwindow*  window;
+
+    // list of systems which can be used
+    EntitySystem entitySystem;
+
     private:
-    std::vector<LightSource> lightSource{};
-    ecs::ECS ecs{};
+    bool         init() {
 
+        /* Initialize the library */
+        if (!glfwInit())
+            return false;
 
+        /* Create a windowed mode window and its OpenGL context */
+        window = glfwCreateWindow(1920, 1080, "Hello World", NULL, NULL);
+        if (!window) {
+            glfwTerminate();
+            return -1;
+        }
 
-    template<typename type>
-    int add(std::vector<type> &vector){
-        vector.push_back(type{});
-        return vector.size();
+        /* Make the window's context current */
+        glfwMakeContextCurrent(window);
+
+        if (!gladLoadGLLoader((GLADloadproc) glfwGetProcAddress)) {
+            std::cout << "Failed to initialize OpenGL context" << std::endl;
+            return false;
+        }
+
+        std::cout << glGetString(GL_VERSION) << std::endl;
+        return true;
     }
 
-    int remove(){
-        return 0;
+    public:
+    MasterSystem() {
+        init();
+        system = ecs.spawn();
+        system->assign<MasterSystem*>(this);
+        system->assign<GLFWwindow  *>(window);
+
+        entitySystem = {};
+        entitySystem.enable();
+        ecs.addSystem(&entitySystem);
+
+    }
+
+    void mainloop() {
+        while (!glfwWindowShouldClose(window)) {
+            /* Render here */
+            glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+            //        system.render(camera, &ecs);
+
+
+            ecs.process(0.0);
+//            std::cout << "swapping "<< std::endl;
+
+            /* Swap front and back buffers */
+            glfwSwapBuffers(window);
+
+
+            /* Poll for and process events */
+            glfwPollEvents();
+        }
+        glfwTerminate();
     }
 };
 

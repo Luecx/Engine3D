@@ -21,7 +21,7 @@ template<typename Shader> class RenderSystem {
         return shader.isCreated();
     }
 
-    virtual void render(Camera& camera, ecs::ECS* ecs) = 0;
+    virtual void render(ecs::ECS* ecs) = 0;
 };
 
 #endif    // ENGINE3D_SRC_RENDER_RENDERSYSTEM_H_

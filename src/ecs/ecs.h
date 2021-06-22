@@ -94,6 +94,15 @@ struct ECS : public System {
     template<typename K, typename... R> EntitySubSet<K, R...> each() {
         return EntitySubSet<K, R...> {&componentEntityList[getComponentHash<K>()]};
     }
+    template<typename K, typename...R> Entity* first(){
+        for(Entity* entity:componentEntityList[getComponentHash<K>()]){
+            if(entity->has<K,R...>()){
+                return entity;
+            }
+        }
+        return nullptr;
+    }
+
     template<typename Event> void              addEventListener(EventListener<Event>* listener) {
         // check if there already exists an event listener of the same kind
         Hash hash = getComponentHash<Event>();
