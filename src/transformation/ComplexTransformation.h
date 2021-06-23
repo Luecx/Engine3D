@@ -6,6 +6,8 @@
 #define ENGINE3D_COMPONENT_GROUPABLEGAMEOBJECT_H_
 
 #include "Transformation.h"
+#include "angle.h"
+
 class ComplexTransformation : public Transformation {
 
     private:
@@ -26,6 +28,9 @@ class ComplexTransformation : public Transformation {
     Matrix<4, 4>&                     getAbsoluteTransformationMatrix();
 
     Vector<3>&                        getAbsolutePosition();
+    Vector<3>                        getXAxis();
+    Vector<3>                        getYAxis();
+    Vector<3>                        getZAxis();
 
     void                              setAbsoluteOutdated();
 

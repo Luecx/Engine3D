@@ -9,8 +9,8 @@
 class OrthogonalCamera : public Camera{
 
     private:
-    float left = -10;
-    float right = 10; float top = 10; float bottom = -10;
+    float left = -3;
+    float right = 3; float top = 3; float bottom = -3;
     float near = 0.01;
     float far = 5000;
 

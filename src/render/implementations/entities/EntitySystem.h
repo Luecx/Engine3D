@@ -5,42 +5,77 @@
 #ifndef ENGINE3D_SRC_RENDER_IMPLEMENTATIONS_ENTITIES_ENTITYSYSTEM_H_
 #define ENGINE3D_SRC_RENDER_IMPLEMENTATIONS_ENTITIES_ENTITYSYSTEM_H_
 
-#include "../../../model/RawModel.h"
 #include "../../../material/ColorMap.h"
-
+#include "../../../material/LightReflection.h"
+#include "../../../material/SpecularMap.h"
+#include "../../../material/TextureStretch.h"
+#include "../../../model/RawModel.h"
 #include "../../RenderSystem.h"
 #include "EntityShader.h"
 
-class EntitySystem : public RenderSystem<EntityShader>, public ecs::System{
+class EntitySystem : public RenderSystem<EntityShader>, public ecs::System {
 
     public:
-
-    void prepareTexturedModel(RawModel& rawModel, ColorMap& colorMap) {
+    void prepareModel(RawModel& rawModel, ecs::Entity* entity) {
         glBindVertexArray(rawModel.vaoID);
         glEnableVertexAttribArray(0);
         glEnableVertexAttribArray(1);
         glEnableVertexAttribArray(2);
 
-        glActiveTexture(GL_TEXTURE0);
-        glBindTexture(GL_TEXTURE_2D, colorMap.getTextureId());
+        if (entity->has<NormalMap>()) {
+            glEnableVertexAttribArray(3);
+        }
     };
 
-    void prepareLights(Camera* camera, ecs::ECS* ecs){
+    void prepareTextures(ecs::Entity* entity) {
+        glActiveTexture(GL_TEXTURE0);
+        glBindTexture(GL_TEXTURE_2D, entity->get<ColorMap>()->getTextureId());
+
+        bool hasNormal   = false;
+        bool hasSpecular = false;
+        if (entity->has<NormalMap>()) {
+            glActiveTexture(GL_TEXTURE1);
+            glBindTexture(GL_TEXTURE_2D, entity->get<NormalMap>()->getTextureId());
+            hasNormal = true;
+        }
+
+        if (entity->has<SpecularMap>()) {
+            glActiveTexture(GL_TEXTURE2);
+            glBindTexture(GL_TEXTURE_2D, entity->get<SpecularMap>()->getTextureId());
+            hasSpecular = true;
+        }
+
+        shader.loadMaterialMapUsage(hasNormal, hasSpecular);
+    }
+
+    void prepareMaterial(ecs::Entity* entity) {
+        if (entity->has<LightReflection>()) {
+            LightReflection& ref = entity->get<LightReflection>().get();
+            shader.loadMaterialData(ref.shineDamper, ref.reflectivity);
+        } else {
+            shader.loadMaterialData(1.0f, 0.3f);
+        }
+
+        if (entity->has<TextureStretch>()) {
+            shader.loadTextureStretch(entity->get<TextureStretch>()->stretch);
+        } else {
+            shader.loadTextureStretch(1.0f);
+        }
+    }
+
+    void prepareLights(Camera* camera, ecs::ECS* ecs) {
         std::vector<std::tuple<LightSource*, Vector<3>, float>> lights {};
         for (auto& entity : ecs->each<LightSource, ComplexTransformation>()) {
 
-            LightSource* source        = entity->get<LightSource>().operator->();
-            Vector<3>    lightPosition = entity->get<ComplexTransformation>()->getAbsolutePosition();
-            lights.push_back({source,
-                lightPosition,
-                (lightPosition - camera->getAbsolutePosition()).length()});
+            LightSource* source                                            = entity->get<LightSource>().operator->();
+            Vector<3>                                        lightPosition = entity->get<ComplexTransformation>()->getAbsolutePosition();
+            lights.push_back({source, lightPosition, (lightPosition - camera->getAbsolutePosition()).length()});
         }
 
         // sort if too many lights
         if (lights.size() >= MAX_LIGHTS_ENTITY_SHADER) {
             std::sort(lights.begin(), lights.end(),
-                      [](std::tuple<LightSource*, Vector<3>, float> s1,
-                         std::tuple<LightSource*, Vector<3>, float> s2) {
+                      [](std::tuple<LightSource*, Vector<3>, float> s1, std::tuple<LightSource*, Vector<3>, float> s2) {
                           return (std::get<2>(s1) > std::get<2>(s2));
                       });
         }
@@ -53,15 +88,17 @@ class EntitySystem : public RenderSystem<EntityShader>, public ecs::System{
 
         // load the light data
         for (int i = 0; i < lightCount; i++) {
-            LightSource* source = std::get<0>(lights[i]);
-            Vector<3> lightLocation = std::get<1>(lights[i]);
+            LightSource* source        = std::get<0>(lights[i]);
+            Vector<3>    lightLocation = std::get<1>(lights[i]);
             shader.loadLight(i, lightLocation, source->color, source->falloff);
         }
     }
+
     void render(ecs::ECS* ecs) override {
 
         Camera* camera = ecs->first<Camera*>()->get<Camera*>().get();
-        if(camera == nullptr) return;
+        if (camera == nullptr)
+            return;
 
         shader.start();
         // loading view and projection matrix
@@ -78,12 +115,13 @@ class EntitySystem : public RenderSystem<EntityShader>, public ecs::System{
 
         for (auto& entity : ecs->each<ComplexTransformation, RawModel, ColorMap>()) {
 
-            prepareTexturedModel(entity->get<RawModel>().get(), entity->get<ColorMap>().get());
+            prepareModel(entity->get<RawModel>().get(), entity);
+            prepareTextures(entity);
+            prepareMaterial(entity);
 
             shader.loadTransformationMatrix(entity->get<ComplexTransformation>()->getAbsoluteTransformationMatrix());
 
             glDrawElements(GL_TRIANGLES, entity->get<RawModel>()->vertexCount, GL_UNSIGNED_INT, nullptr);
-
         }
 
         shader.stop();

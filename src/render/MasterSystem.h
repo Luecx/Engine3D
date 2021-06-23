@@ -6,6 +6,7 @@
 #define ENGINE3D_SRC_RENDER_MASTERSYSTEM_H_
 
 #include "../components/LightSource.h"
+#include "../control/ControlSystem.h"
 #include "../ecs/ecs.h"
 #include "../glad.h"
 #include "implementations/entities/EntitySystem.h"
@@ -22,8 +23,11 @@ class MasterSystem {
     // list of systems which can be used
     EntitySystem entitySystem;
 
+    // list of basic systems which work in the background
+    ControlSystem controlSystem;
+
     private:
-    bool         init() {
+    bool init() {
 
         /* Initialize the library */
         if (!glfwInit())
@@ -53,30 +57,32 @@ class MasterSystem {
         init();
         system = ecs.spawn();
         system->assign<MasterSystem*>(this);
-        system->assign<GLFWwindow  *>(window);
+        system->assign<GLFWwindow*>(window);
 
         entitySystem = {};
         entitySystem.enable();
         ecs.addSystem(&entitySystem);
 
+        controlSystem = {};
+        ecs.addSystem(&controlSystem);
     }
 
     void mainloop() {
+        double previousTime = glfwGetTime();
         while (!glfwWindowShouldClose(window)) {
+            double currentTime = glfwGetTime();
             /* Render here */
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
             //        system.render(camera, &ecs);
 
-
-            ecs.process(0.0);
-//            std::cout << "swapping "<< std::endl;
+            ecs.process(currentTime - previousTime);
 
             /* Swap front and back buffers */
             glfwSwapBuffers(window);
 
-
             /* Poll for and process events */
             glfwPollEvents();
+            previousTime = currentTime;
         }
         glfwTerminate();
     }

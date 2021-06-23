@@ -33,6 +33,8 @@ struct Transformation {
     void          setRotation(const Vector<3>& rotation);
     void          setScale(const Vector<3>& scale);
 
+    void rotate(const Vector<3>& axis, Precision angle);
+
     protected:
     virtual void dataChangedNotification() {};
 

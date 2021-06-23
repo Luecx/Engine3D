@@ -27,7 +27,8 @@ struct Vertex {
 Vertex& processAlreadyProcessedVertex(Vertex& previousVertex, int newTextureIndex, int newNormalIndex, std::vector<int>& indices,
                                      std::vector<Vertex>& vertices) {
 
-    if (previousVertex.textureIndex == newTextureIndex && previousVertex.normalIndex == newNormalIndex) {
+    if (previousVertex.textureIndex == newTextureIndex &&
+        previousVertex.normalIndex == newNormalIndex) {
         indices.push_back(previousVertex.index);
         return previousVertex;
     } else {
@@ -35,7 +36,7 @@ Vertex& processAlreadyProcessedVertex(Vertex& previousVertex, int newTextureInde
         duplicateVertex.textureIndex = newTextureIndex;
         duplicateVertex.normalIndex  = newNormalIndex;
         duplicateVertex.index        = vertices.size();
-        vertices.emplace_back(duplicateVertex);
+        vertices.push_back(duplicateVertex);
         indices.push_back(duplicateVertex.index);
         return vertices[vertices.size()-1];
     }
@@ -64,7 +65,7 @@ Vertex& processVertex(std::string& vertex, std::vector<Vertex>& vertices, std::v
     }
 }
 
-void calculateTangents(Vertex &v1, Vertex& v2, Vertex& v3, std::vector<Vector<2>> textureCoords){
+void calculateTangents(Vertex &v1, Vertex& v2, Vertex& v3, std::vector<Vector<2>> &textureCoords){
     Vector<3> deltaPos2 = v2.position - v1.position;
     Vector<3> deltaPos3 = v3.position - v1.position;
     Vector<2> uv1 = textureCoords[v1.textureIndex];
@@ -73,14 +74,16 @@ void calculateTangents(Vertex &v1, Vertex& v2, Vertex& v3, std::vector<Vector<2>
     Vector<2> deltaUv2 = uv2-uv1;
     Vector<2> deltaUv3 = uv3-uv1;
 
-    float r = 1.0 / (deltaUv2[0] * deltaUv3[1] - deltaPos2[1] * deltaUv3[0]);
-    deltaPos2 *= deltaUv3[2];
-    deltaPos3 *= deltaUv2[2];
+    float r = 1.0 / (deltaUv2[0] * deltaUv3[1] - deltaUv2[1] * deltaUv3[0]);
+    deltaPos2 *= deltaUv3[1];
+    deltaPos3 *= deltaUv2[1];
     Vector<3> tangent = deltaPos2 - deltaPos3;
     tangent *= r;
+    tangent.normalise();
     v1.tangents.push_back(tangent);
     v2.tangents.push_back(tangent);
     v3.tangents.push_back(tangent);
+
 }
 
 void removeUnusedVertices(std::vector<Vertex>& vertices){
@@ -139,15 +142,36 @@ RawModel loadOBJ(const std::string& objFileName, bool computeTangents) {
             Vector<3> normal {std::stod(v1), std::stod(v2), std::stod(v3)};
             normals.push_back(normal);
         } else if (key == "f") {
+
+
+            if(faceCount == 0){
+                vertices.resize(vertices.size() * 3);
+            }
+
             faceCount ++;
-            Vertex ve1 = processVertex(v1, vertices, indices);
-            Vertex ve2 = processVertex(v2, vertices, indices);
-            Vertex ve3 = processVertex(v3, vertices, indices);
+
+
+//            if(v1=="21381/28760/21381" && v2 == "21312/28649/21312" && v3 == "21352/28664/21352"){
+//                std::cout << "---------------------" << std::endl;
+//            }
+
+            Vertex& ve1 = processVertex(v1, vertices, indices);
+            Vertex& ve2 = processVertex(v2, vertices, indices);
+            Vertex& ve3 = processVertex(v3, vertices, indices);
+
+//            if(v1=="21381/28760/21381" && v2 == "21312/28649/21312" && v3 == "21352/28664/21352"){
+//                std::cout << std::endl;
+//                std::cout << ve1.index << std::endl;
+//                std::cout << std::endl;
+//                std::cout << "---------------------" << std::endl;
+//            }
+
             if(computeTangents){
                 calculateTangents(ve1, ve2, ve3, textureCoords);
             }
         }
     }
+
     ifs.close();
     removeUnusedVertices(vertices);
 
@@ -168,9 +192,13 @@ RawModel loadOBJ(const std::string& objFileName, bool computeTangents) {
         finalNormals.push_back(normals[v.normalIndex][1]);
         finalNormals.push_back(normals[v.normalIndex][2]);
 
-        finalTangents.push_back(v.averagedTangent[0]);
-        finalTangents.push_back(v.averagedTangent[1]);
-        finalTangents.push_back(v.averagedTangent[2]);
+
+        if(computeTangents){
+            finalTangents.push_back(v.averagedTangent[0]);
+            finalTangents.push_back(v.averagedTangent[1]);
+            finalTangents.push_back(v.averagedTangent[2]);
+        }
+
     }
 
 

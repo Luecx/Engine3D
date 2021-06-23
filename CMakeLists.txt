@@ -39,12 +39,12 @@ add_executable(Engine3D
         src/render/implementations/entities/EntitySystem.h
         src/material/Texture.cpp
         src/material/Texture.h
-        src/material/EntityMaterial.cpp
-        src/material/EntityMaterial.h
         src/material/ColorMap.h
         src/material/ColorMap.cpp
         src/material/NormalMap.h
         src/material/NormalMap.cpp
+        src/material/SpecularMap.h
+        src/material/SpecularMap.cpp
         src/camera/OrthogonalCamera.cpp
         src/camera/OrthogonalCamera.h
         src/render/MasterSystem.cpp
@@ -64,7 +64,8 @@ add_executable(Engine3D
         src/transformation/Transformation.h
         src/transformation/Transformation.cpp
         src/transformation/ComplexTransformation.h
-        src/transformation/ComplexTransformation.cpp)
+        src/transformation/ComplexTransformation.cpp
+        src/material/LightReflection.h src/material/TextureStretch.h src/control/ControlSystem.h src/control/ControlSystem.cpp src/transformation/angle.h)
 
 
 

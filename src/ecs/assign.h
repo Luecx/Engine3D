@@ -10,7 +10,7 @@
 
 namespace ecs{
 
-template<typename T, typename... Args> void Entity::assign(Args&&... args) {
+template<typename T, typename... Args> inline void Entity::assign(Args&&... args) {
     T t {args...};
 
     if (has<T>()) {
@@ -24,7 +24,7 @@ template<typename T, typename... Args> void Entity::assign(Args&&... args) {
         ecs->componentAdded<T>(this);
     }
 }
-template<typename T> void Entity::remove() {
+template<typename T> inline void Entity::remove() {
     if (!has<T>())
         return;
     Hash  hash      = getComponentHash<T>();
@@ -33,7 +33,7 @@ template<typename T> void Entity::remove() {
     components.erase(hash);
     ecs->componentRemoved<T>(this);
 }
-void Entity::removeAll() {
+inline void Entity::removeAll() {
     for (auto pair : components) {
         ecs->componentRemoved(pair.first, this);
         delete pair.second;
@@ -41,7 +41,7 @@ void Entity::removeAll() {
 
     components.clear();
 }
-void Entity::destroy() {
+inline void Entity::destroy() {
     ecs->destroy(this->entityID);
 }
 }

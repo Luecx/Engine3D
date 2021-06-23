@@ -5,6 +5,7 @@
 #include "Transformation.h"
 
 #include <iostream>
+#include "angle.h"
 
 Transformation::Transformation(const Vector<3>& position, const Vector<3>& rotation,
                                      const Vector<3>& scale)
@@ -48,12 +49,27 @@ void Transformation::setScale(const Vector<3>& scale) {
     setOutdated();
     Transformation::scale = scale;
 }
+void Transformation::rotate(const Vector<3>& axis, Precision angle){
+    setOutdated();
+    Vector<3> axisNorm = axis;
+    axisNorm.normalise();
+
+    Matrix<4,4> rotationMatrix{};
+    rotationMatrix.identity();
+    rotationMatrix.rotate3D(toRadians(angle), axisNorm);
+
+    Matrix<4,4> newTransformationMatrix = rotationMatrix * transformationMatrix;
+    Vector<3> newRotation = matrixToDegrees(newTransformationMatrix);
+    this->setRotation(newRotation);
+
+    getTransformationMatrix();
+}
 
 void Transformation::updateTransformationMatrix() {
     transformationMatrix.identity();
     transformationMatrix.translate3D(position);
-    transformationMatrix.rotate3D(rotation[0] * M_PI / 180, {1, 0, 0});
-    transformationMatrix.rotate3D(rotation[1] * M_PI / 180, {0, 1, 0});
     transformationMatrix.rotate3D(rotation[2] * M_PI / 180, {0, 0, 1});
+    transformationMatrix.rotate3D(rotation[1] * M_PI / 180, {0, 1, 0});
+    transformationMatrix.rotate3D(rotation[0] * M_PI / 180, {1, 0, 0});
     transformationMatrix.scale3D(scale);
 }
