@@ -24,13 +24,13 @@ struct Vertex {
 
 
 
-Vertex& processAlreadyProcessedVertex(Vertex& previousVertex, int newTextureIndex, int newNormalIndex, std::vector<int>& indices,
+int processAlreadyProcessedVertex(Vertex& previousVertex, int newTextureIndex, int newNormalIndex, std::vector<int>& indices,
                                      std::vector<Vertex>& vertices) {
 
     if (previousVertex.textureIndex == newTextureIndex &&
         previousVertex.normalIndex == newNormalIndex) {
         indices.push_back(previousVertex.index);
-        return previousVertex;
+        return previousVertex.index;
     } else {
         Vertex duplicateVertex {previousVertex.position, static_cast<int>(vertices.size())};
         duplicateVertex.textureIndex = newTextureIndex;
@@ -38,12 +38,12 @@ Vertex& processAlreadyProcessedVertex(Vertex& previousVertex, int newTextureInde
         duplicateVertex.index        = vertices.size();
         vertices.push_back(duplicateVertex);
         indices.push_back(duplicateVertex.index);
-        return vertices[vertices.size()-1];
+        return vertices.size()-1;
     }
 }
 
 
-Vertex& processVertex(std::string& vertex, std::vector<Vertex>& vertices, std::vector<int>& indices) {
+int processVertex(std::string& vertex, std::vector<Vertex>& vertices, std::vector<int>& indices) {
     // get the three separated values
     std::stringstream ss(vertex);
     std::string       k1, k2, k3;
@@ -59,7 +59,7 @@ Vertex& processVertex(std::string& vertex, std::vector<Vertex>& vertices, std::v
         vertices[index].textureIndex = textureIndex;
         vertices[index].normalIndex  = normalIndex;
         indices.push_back(index);
-        return vertices[index];
+        return index;
     } else {
         return processAlreadyProcessedVertex(vertices[index], textureIndex, normalIndex, indices, vertices);
     }
@@ -83,7 +83,6 @@ void calculateTangents(Vertex &v1, Vertex& v2, Vertex& v3, std::vector<Vector<2>
     v1.tangents.push_back(tangent);
     v2.tangents.push_back(tangent);
     v3.tangents.push_back(tangent);
-
 }
 
 void removeUnusedVertices(std::vector<Vertex>& vertices){
@@ -122,7 +121,7 @@ RawModel loadOBJ(const std::string& objFileName, bool computeTangents) {
     // going through each line
     while (std::getline(ifs, line)) {
 
-        if (line.rfind("#", 0) == 0)
+        if (line.rfind('#', 0) == 0)
             continue;
         ss.clear();
         std::string key;
@@ -142,32 +141,13 @@ RawModel loadOBJ(const std::string& objFileName, bool computeTangents) {
             Vector<3> normal {std::stod(v1), std::stod(v2), std::stod(v3)};
             normals.push_back(normal);
         } else if (key == "f") {
-
-
-            if(faceCount == 0){
-                vertices.resize(vertices.size() * 3);
-            }
-
             faceCount ++;
 
-
-//            if(v1=="21381/28760/21381" && v2 == "21312/28649/21312" && v3 == "21352/28664/21352"){
-//                std::cout << "---------------------" << std::endl;
-//            }
-
-            Vertex& ve1 = processVertex(v1, vertices, indices);
-            Vertex& ve2 = processVertex(v2, vertices, indices);
-            Vertex& ve3 = processVertex(v3, vertices, indices);
-
-//            if(v1=="21381/28760/21381" && v2 == "21312/28649/21312" && v3 == "21352/28664/21352"){
-//                std::cout << std::endl;
-//                std::cout << ve1.index << std::endl;
-//                std::cout << std::endl;
-//                std::cout << "---------------------" << std::endl;
-//            }
-
+            int ve1 = processVertex(v1, vertices, indices);
+            int ve2 = processVertex(v2, vertices, indices);
+            int ve3 = processVertex(v3, vertices, indices);
             if(computeTangents){
-                calculateTangents(ve1, ve2, ve3, textureCoords);
+                calculateTangents(vertices[ve1], vertices[ve2], vertices[ve3], textureCoords);
             }
         }
     }

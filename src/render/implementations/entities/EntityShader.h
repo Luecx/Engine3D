@@ -16,6 +16,7 @@ class EntityShader : public ShaderProgram {
     int loc_transformationMatrix;
     int loc_viewMatrix;
     int loc_projectionMatrix;
+    int loc_cameraPosition;
     int loc_lightCount;
     int loc_lightPosition[MAX_LIGHTS_ENTITY_SHADER];
     int loc_lightColor[MAX_LIGHTS_ENTITY_SHADER];
@@ -42,6 +43,7 @@ class EntityShader : public ShaderProgram {
         loc_transformationMatrix = ShaderProgram::getUniformLocation("transformationMatrix");
         loc_viewMatrix           = ShaderProgram::getUniformLocation("viewMatrix");
         loc_projectionMatrix     = ShaderProgram::getUniformLocation("projectionMatrix");
+        loc_cameraPosition       = ShaderProgram::getUniformLocation("cameraPosition");
         loc_lightCount           = ShaderProgram::getUniformLocation("lightCount");
         for(int i = 0; i < MAX_LIGHTS_ENTITY_SHADER; i++){
             loc_lightPosition[i] = ShaderProgram::getUniformLocation("lights[" + std::to_string(i) + "].position");
@@ -74,6 +76,9 @@ class EntityShader : public ShaderProgram {
     void loadVPMatrix(Matrix<4,4> &viewMatrix,Matrix<4,4> &projectionMatrix){
         loadMatrix(loc_viewMatrix, viewMatrix);
         loadMatrix(loc_projectionMatrix, projectionMatrix);
+    }
+    void loadCameraPosition(Vector<3>& position){
+        loadVector(loc_cameraPosition, position);
     }
     void loadLightCount(int count){
         loadInt(loc_lightCount, count);

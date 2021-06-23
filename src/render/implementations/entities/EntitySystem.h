@@ -103,6 +103,7 @@ class EntitySystem : public RenderSystem<EntityShader>, public ecs::System {
         shader.start();
         // loading view and projection matrix
         shader.loadVPMatrix(camera->getViewMatrix(), camera->getProjectionMatrix());
+        shader.loadCameraPosition(camera->getAbsolutePosition());
 
         // load the light sources
         prepareLights(camera, ecs);

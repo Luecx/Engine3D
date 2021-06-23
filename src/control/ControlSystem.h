@@ -9,9 +9,9 @@
 
 struct SimpleControl{
 
-    float forwardSpeed = 1;
-    float sideSpeed = 1;
-    float rotationSpeed = 50;
+    float forwardSpeed = 0.4;
+    float sideSpeed = 0.4;
+    float rotationSpeed = 60;
 
 };
 

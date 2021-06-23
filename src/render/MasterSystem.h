@@ -10,6 +10,7 @@
 #include "../ecs/ecs.h"
 #include "../glad.h"
 #include "implementations/entities/EntitySystem.h"
+#include "implementations/normals/NormalSystem.h"
 
 #include <GLFW/glfw3.h>
 #include <vector>
@@ -21,7 +22,9 @@ class MasterSystem {
     GLFWwindow*  window;
 
     // list of systems which can be used
-    EntitySystem entitySystem;
+
+    EntitySystem  entitySystem;
+    NormalSystem  normalSystem;
 
     // list of basic systems which work in the background
     ControlSystem controlSystem;
@@ -62,6 +65,10 @@ class MasterSystem {
         entitySystem = {};
         entitySystem.enable();
         ecs.addSystem(&entitySystem);
+
+        normalSystem = {};
+        normalSystem.enable();
+        ecs.addSystem(&normalSystem);
 
         controlSystem = {};
         ecs.addSystem(&controlSystem);
