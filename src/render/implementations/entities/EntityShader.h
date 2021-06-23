@@ -25,11 +25,13 @@ class EntityShader : public ShaderProgram {
     int loc_reflectivity;
     int loc_useNormalMap;
     int loc_useSpecularMap;
+    int loc_parallaxDepth;
     int loc_textureStretch;
 
     int loc_normalMap;
     int loc_colorMap;
     int loc_specularMap;
+    int loc_parallaxMap;
 
     public:
     EntityShader() : ShaderProgram(
@@ -54,10 +56,12 @@ class EntityShader : public ShaderProgram {
         loc_reflectivity         = ShaderProgram::getUniformLocation("reflectivity");
         loc_useNormalMap         = ShaderProgram::getUniformLocation("useNormalMap");
         loc_useSpecularMap       = ShaderProgram::getUniformLocation("useSpecularMap");
+        loc_parallaxDepth       = ShaderProgram::getUniformLocation("parallaxDepth");
         loc_textureStretch       = ShaderProgram::getUniformLocation("textureStretch");
 
         loc_colorMap             = ShaderProgram::getUniformLocation("colorMap");
         loc_normalMap            = ShaderProgram::getUniformLocation("normalMap");
+        loc_parallaxMap          = ShaderProgram::getUniformLocation("parallaxMap");
         loc_specularMap          = ShaderProgram::getUniformLocation("specularMap");
     }
     void bindAttributes() override {
@@ -68,6 +72,7 @@ class EntityShader : public ShaderProgram {
         loadInt(loc_colorMap, 0);
         loadInt(loc_normalMap, 1);
         loadInt(loc_specularMap, 2);
+        loadInt(loc_parallaxMap, 3);
     }
     public:
     void loadTransformationMatrix(Matrix<4,4> &transformationMatrix){
@@ -91,6 +96,9 @@ class EntityShader : public ShaderProgram {
     void loadMaterialMapUsage(bool useNormalMap, bool useSpecularMap){
         loadBool(loc_useNormalMap, useNormalMap);
         loadBool(loc_useSpecularMap, useSpecularMap);
+    }
+    void loadParallaxDepth(float parallaxDepth){
+        loadFloat(loc_parallaxDepth, parallaxDepth);
     }
     void loadMaterialData(float shineDamper,float reflectivity){
         loadFloat(loc_shineDamper, shineDamper);

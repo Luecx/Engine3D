@@ -3,7 +3,7 @@ layout(triangles) in;
 
 layout(line_strip, max_vertices=12) out;
 
-float normal_length = 0.001;
+float normal_length = 0.4;
 
 uniform mat4 transformationMatrix;
 uniform mat4 viewMatrix;
@@ -21,10 +21,9 @@ out vec4 vertex_color;
 
 void main()
 {
-    int i;
+
     mat4 mvp = projectionMatrix * viewMatrix * transformationMatrix;
-    for(i=0; i<gl_in.length(); i++)
-    {
+    for (int i=0; i<gl_in.length(); i++) {
         vec3 P = vertex[i].position.xyz;
         vec3 N = vertex[i].normal.xyz;
 

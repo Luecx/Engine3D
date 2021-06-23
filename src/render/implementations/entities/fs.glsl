@@ -20,13 +20,16 @@ uniform float reflectivity;
 // texture stretching
 uniform float textureStretch;
 
+// parallax
+uniform float parallaxDepth;
+
 // maps
 uniform sampler2D colorMap;
 uniform sampler2D normalMap;
 uniform sampler2D specularMap;
+uniform sampler2D parallaxMap;
 
 uniform bool useNormalMap;
-uniform bool useSpecularMap;
 
 // lights
 struct LightSource
@@ -39,16 +42,78 @@ struct LightSource
 uniform LightSource lights[4];
 uniform int lightCount;
 
+
+//vec2 transformTexCoords(vec2 texCoords, vec3 viewDir){
+//    float height =  texture(parallaxMap, texCoords).r;
+//    vec2 p = viewDir.xy / viewDir.z * (height * parallaxDepth);
+//    return texCoords - p;
+//}
+
+vec2 transformTexCoords(vec2 texCoords, vec3 viewDir){
+
+
+    const float minLayers = 8.0;
+    const float maxLayers = 32.0;
+    float numLayers = mix(maxLayers, minLayers, max(dot(vec3(0.0, 0.0, 1.0), viewDir), 0.0));
+//    float numLayers = 10;
+
+    // calculate the size of each layer
+    float layerDepth = 1.0 / numLayers;
+    // depth of current layer
+    float currentLayerDepth = 0.0;
+    // the amount to shift the texture coordinates per layer (from vector P)
+    vec2 P = viewDir.xy / viewDir.z * parallaxDepth;
+    vec2 deltaTexCoords = P / numLayers;
+
+    // get initial values
+    vec2  currentTexCoords     = texCoords;
+    float currentDepthMapValue = texture(parallaxMap, currentTexCoords).r;
+
+    while(currentLayerDepth < currentDepthMapValue)
+    {
+        // shift texture coordinates along direction of P
+        currentTexCoords -= deltaTexCoords;
+        // get depthmap value at current texture coordinates
+        currentDepthMapValue = texture(parallaxMap, currentTexCoords).r;
+        // get depth of next layer
+        currentLayerDepth += layerDepth;
+    }
+
+    // get texture coordinates before collision (reverse operations)
+    vec2 prevTexCoords = currentTexCoords + deltaTexCoords;
+
+    // get depth after and before collision for linear interpolation
+    float afterDepth  = currentDepthMapValue - currentLayerDepth;
+    float beforeDepth = texture(parallaxMap, prevTexCoords).r - currentLayerDepth + layerDepth;
+
+    // interpolation of texture coordinates
+    float weight = afterDepth / (afterDepth - beforeDepth);
+    vec2 finalTexCoords = prevTexCoords * weight + currentTexCoords * (1.0 - weight);
+
+    return finalTexCoords;
+
+}
+
+
 void main()
 {
-    vec4 textureColour = texture(colorMap,fsIn.texCoords * textureStretch);
+
+    vec2 textureCoords = fsIn.texCoords;
+    // compute parallax if needed
+    if(parallaxDepth != 0){
+        textureCoords = transformTexCoords(textureCoords, fsIn.tangentCameraPos);
+    }
+    vec4 textureColour = texture(colorMap,textureCoords * textureStretch);
+
+
+
 
     vec3 lightColor = vec3(0,0,0);
     vec3 unitNormal = vec3(0,0,1);
 
     // adjust the normal using the TBN matrix if normal mapping is supported
     if(useNormalMap){
-        unitNormal = texture(normalMap, fsIn.texCoords * textureStretch).rgb;
+        unitNormal = texture(normalMap, textureCoords * textureStretch).rgb;
         unitNormal = unitNormal * 2.0 - 1.0;
         unitNormal = normalize(unitNormal);
     }

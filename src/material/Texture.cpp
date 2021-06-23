@@ -58,7 +58,6 @@ Texture::~Texture() {
 
 void Texture::clean(){
     if (cleanTexture) {
-        std::cout << "glDeleteTextures " << textureID << std::endl;
         glDeleteTextures(1, &textureID);
     }
 }

@@ -7,6 +7,7 @@
 
 #include "../../../material/ColorMap.h"
 #include "../../../material/LightReflection.h"
+#include "../../../material/ParallaxMap.h"
 #include "../../../material/SpecularMap.h"
 #include "../../../material/TextureStretch.h"
 #include "../../../model/RawModel.h"
@@ -33,6 +34,7 @@ class EntitySystem : public RenderSystem<EntityShader>, public ecs::System {
 
         bool hasNormal   = false;
         bool hasSpecular = false;
+
         if (entity->has<NormalMap>()) {
             glActiveTexture(GL_TEXTURE1);
             glBindTexture(GL_TEXTURE_2D, entity->get<NormalMap>()->getTextureId());
@@ -43,6 +45,14 @@ class EntitySystem : public RenderSystem<EntityShader>, public ecs::System {
             glActiveTexture(GL_TEXTURE2);
             glBindTexture(GL_TEXTURE_2D, entity->get<SpecularMap>()->getTextureId());
             hasSpecular = true;
+        }
+
+        if (entity->has<ParallaxMap>()) {
+            glActiveTexture(GL_TEXTURE3);
+            glBindTexture(GL_TEXTURE_2D, entity->get<ParallaxMap>()->getTextureId());
+            shader.loadParallaxDepth(entity->get<ParallaxMap>()->depth);
+        }else{
+            shader.loadParallaxDepth(0);
         }
 
         shader.loadMaterialMapUsage(hasNormal, hasSpecular);

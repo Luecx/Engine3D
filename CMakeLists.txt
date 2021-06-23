@@ -47,6 +47,8 @@ add_executable(Engine3D
         src/material/NormalMap.cpp
         src/material/SpecularMap.h
         src/material/SpecularMap.cpp
+        src/material/ParallaxMap.h
+        src/material/ParallaxMap.cpp
         src/camera/OrthogonalCamera.cpp
         src/camera/OrthogonalCamera.h
         src/render/MasterSystem.cpp
