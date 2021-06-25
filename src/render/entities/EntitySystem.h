@@ -20,15 +20,20 @@ class EntitySystem : public RenderSystem<EntityShader>, public ecs::System {
     public:
     void prepareModel(RawModel& rawModel);
 
+    void loadShadowView(ecs::ECS* ecs);
+
     void prepareTextures(ecs::Entity* entity);
 
     void prepareMaterial(ecs::Entity* entity);
 
     void prepareLights(Camera* camera, ecs::ECS* ecs);
 
+    void loadShadowMaps(ecs::ECS* p_ecs);
+
     void render(ecs::ECS* ecs) override;
 
     void process(ecs::ECS* ecs, double delta) override;
+
 };
 
 #endif    // ENGINE3D_SRC_RENDER_IMPLEMENTATIONS_ENTITIES_ENTITYSYSTEM_H_

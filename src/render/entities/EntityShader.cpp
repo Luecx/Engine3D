@@ -12,6 +12,7 @@ void EntityShader::getAllUniformLocations() {
     loc_transformationMatrix = ShaderProgram::getUniformLocation("transformationMatrix");
     loc_viewMatrix           = ShaderProgram::getUniformLocation("viewMatrix");
     loc_projectionMatrix     = ShaderProgram::getUniformLocation("projectionMatrix");
+    loc_shadowViewMatrix     = ShaderProgram::getUniformLocation("shadowViewMatrix");
     loc_cameraPosition       = ShaderProgram::getUniformLocation("cameraPosition");
     loc_lightCount           = ShaderProgram::getUniformLocation("lightCount");
     for(int i = 0; i < MAX_LIGHTS; i++){
@@ -22,14 +23,16 @@ void EntityShader::getAllUniformLocations() {
     loc_shineDamper          = ShaderProgram::getUniformLocation("shineDamper");
     loc_reflectivity         = ShaderProgram::getUniformLocation("reflectivity");
     loc_useNormalMap         = ShaderProgram::getUniformLocation("useNormalMap");
-    loc_useSpecularMap       = ShaderProgram::getUniformLocation("useSpecularMap");
-    loc_parallaxDepth       = ShaderProgram::getUniformLocation("parallaxDepth");
+//    loc_useSpecularMap       = ShaderProgram::getUniformLocation("useSpecularMap");
+    loc_useShadowMap         = ShaderProgram::getUniformLocation("useShadowMap");
+    loc_parallaxDepth        = ShaderProgram::getUniformLocation("parallaxDepth");
     loc_textureStretch       = ShaderProgram::getUniformLocation("textureStretch");
 
     loc_colorMap             = ShaderProgram::getUniformLocation("colorMap");
     loc_normalMap            = ShaderProgram::getUniformLocation("normalMap");
     loc_parallaxMap          = ShaderProgram::getUniformLocation("parallaxMap");
-    loc_specularMap          = ShaderProgram::getUniformLocation("specularMap");
+//    loc_specularMap          = ShaderProgram::getUniformLocation("specularMap");
+    loc_shadowMap            = ShaderProgram::getUniformLocation("shadowMap");
 }
 void EntityShader::bindAttributes() {
     ShaderProgram::bindAttributes();
@@ -40,6 +43,7 @@ void EntityShader::connectAllTextureUnits() {
     loadInt(loc_normalMap, 1);
     loadInt(loc_specularMap, 2);
     loadInt(loc_parallaxMap, 3);
+    loadInt(loc_shadowMap, 4);
 }
 void EntityShader::loadTransformationMatrix(Matrix<4, 4>& transformationMatrix) {
     loadMatrix(loc_transformationMatrix, transformationMatrix);
@@ -47,6 +51,10 @@ void EntityShader::loadTransformationMatrix(Matrix<4, 4>& transformationMatrix) 
 void EntityShader::loadVPMatrix(Matrix<4, 4>& viewMatrix, Matrix<4, 4>& projectionMatrix) {
     loadMatrix(loc_viewMatrix, viewMatrix);
     loadMatrix(loc_projectionMatrix, projectionMatrix);
+}
+void EntityShader::loadShadowView(bool useShadows, Matrix<4, 4>& viewMatrix) {
+    loadBool(loc_useShadowMap, useShadows);
+    loadMatrix(loc_shadowViewMatrix, viewMatrix);
 }
 void EntityShader::loadCameraPosition(Vector<3>& position) {
     loadVector(loc_cameraPosition, position);

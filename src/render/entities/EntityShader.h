@@ -15,6 +15,7 @@ class EntityShader : public ShaderProgram {
     int loc_transformationMatrix;
     int loc_viewMatrix;
     int loc_projectionMatrix;
+    int loc_shadowViewMatrix;
     int loc_cameraPosition;
     int loc_lightCount;
     int loc_lightPosition[MAX_LIGHTS];
@@ -24,6 +25,7 @@ class EntityShader : public ShaderProgram {
     int loc_reflectivity;
     int loc_useNormalMap;
     int loc_useSpecularMap;
+    int loc_useShadowMap;
     int loc_parallaxDepth;
     int loc_textureStretch;
 
@@ -31,6 +33,7 @@ class EntityShader : public ShaderProgram {
     int loc_colorMap;
     int loc_specularMap;
     int loc_parallaxMap;
+    int loc_shadowMap;
 
     public:
     EntityShader();
@@ -42,6 +45,7 @@ class EntityShader : public ShaderProgram {
     public:
     void loadTransformationMatrix(Matrix<4,4> &transformationMatrix);
     void loadVPMatrix(Matrix<4,4> &viewMatrix,Matrix<4,4> &projectionMatrix);
+    void loadShadowView(bool useShadows, Matrix<4, 4>& viewMatrix);
     void loadCameraPosition(Vector<3>& position);
     void loadLightCount(int count);
     void loadLight(int index, Vector<3>& position, Vector<3>& color, Vector<3>& factors);

@@ -8,6 +8,7 @@ layout(location = 3) in vec3 tangent;
 
 out VS_OUT{
     vec3 fragPos;
+    vec4 fragPosLightSpace;
     vec2 texCoords;
     vec3 tangentCameraPos;
     vec3 tangentFragPos;
@@ -25,6 +26,7 @@ uniform vec3 cameraPosition;
 uniform mat4 transformationMatrix;
 uniform mat4 viewMatrix;
 uniform mat4 projectionMatrix;
+uniform mat4 shadowViewMatrix;
 uniform bool useNormalMap;
 
 uniform LightSource lights[4];
@@ -51,8 +53,9 @@ void main()
         vsOut.tangentLightPos[i] = TBN * (lights[i].position - worldPosition.xyz);
     }
 
-    vsOut.tangentCameraPos = TBN * ( cameraPosition.xyz - worldPosition.xyz);
-    vsOut.tangentFragPos   = TBN * ( worldPosition.xyz);
-    vsOut.fragPos          =       ( worldPosition.xyz);
-    vsOut.texCoords        =       ( textureCoords);
+    vsOut.tangentCameraPos  = TBN * ( cameraPosition.xyz - worldPosition.xyz);
+    vsOut.tangentFragPos    = TBN * ( worldPosition.xyz);
+    vsOut.fragPos           =       ( worldPosition.xyz);
+    vsOut.texCoords         =       ( textureCoords);
+    vsOut.fragPosLightSpace = shadowViewMatrix * worldPosition;
 }

@@ -4,6 +4,7 @@
 // from vs
 in VS_OUT{
     vec3 fragPos;
+    vec4 fragPosLightSpace;
     vec2 texCoords;
     vec3 tangentCameraPos;
     vec3 tangentFragPos;
@@ -28,8 +29,10 @@ uniform sampler2D colorMap;
 uniform sampler2D normalMap;
 uniform sampler2D specularMap;
 uniform sampler2D parallaxMap;
+uniform sampler2D shadowMap;
 
 uniform bool useNormalMap;
+uniform bool useShadowMap;
 
 // lights
 struct LightSource
@@ -93,6 +96,33 @@ vec2 transformTexCoords(vec2 texCoords, vec3 viewDir){
 
 }
 
+float computeShadowIntensity(vec4 lightSpace){
+//    float bias = max(0.05 * (1.0 - dot(normal, lightDir)), 0.005);
+    float bias = 0.003;
+
+    vec3 projCoords = lightSpace.xyz / lightSpace.w;
+    projCoords = projCoords * 0.5 + 0.5;
+    if(projCoords.z > 1.0)
+        return 0.0;
+
+    float closestDepth = texture(shadowMap, projCoords.xy).r;
+    float currentDepth = projCoords.z;
+//    float shadow = currentDepth -bias > closestDepth  ? 1.0 : 0.2;
+
+    float shadow = 0.0;
+    vec2 texelSize = 1.0 / textureSize(shadowMap, 0);
+    for(int x = -1; x <= 1; ++x)
+    {
+        for(int y = -1; y <= 1; ++y)
+        {
+            float pcfDepth = texture(shadowMap, projCoords.xy + vec2(x, y) * texelSize).r;
+            shadow += currentDepth - bias > pcfDepth ? 1.0 : 0.0;
+        }
+    }
+    shadow /= 9.0;
+
+    return shadow;
+}
 
 void main()
 {
@@ -106,8 +136,11 @@ void main()
     }
     vec4 textureColour = texture(colorMap,textureCoords * textureStretch);
 
-
-
+    // compute shadows
+    float shadow = 0;
+    if(useShadowMap){
+        shadow = computeShadowIntensity(fsIn.fragPosLightSpace);
+    }
 
     vec3 lightColor = vec3(0,0,0);
     vec3 unitNormal = vec3(0,0,1);
@@ -123,6 +156,9 @@ void main()
     vec3 totalDiffuse   = vec3(lightCount == 0 ? 1:0);
     vec3 totalSpecular  = vec3(0,0,0);
 
+    // add some basic offset for dark areas
+    vec4 ambient = 0.15 * textureColour;
+
     vec3 unitVectorToCamera = normalize(fsIn.tangentCameraPos);
 
     for(int i = 0; i < lightCount; i++){
@@ -131,7 +167,6 @@ void main()
         float scalar     = lights[i].factors.x * pow(lights[i].factors.y, lights[i].factors.z * dist);
         float angleScale = dot(unitLight, unitNormal);
 
-        float brightness     = max(angleScale,0.2);
         vec3  lightDirection = -unitLight;
         vec3  reflectedLight = reflect(lightDirection, unitNormal);
 
@@ -139,10 +174,16 @@ void main()
         float dampedFactor   = pow(specularFactor,shineDamper);
 
 
-        totalDiffuse  = totalDiffuse  + (brightness * lights[i].color) * scalar;
-        if(angleScale > 0)
+        if(angleScale < 0){
+            totalDiffuse  = totalDiffuse  + (abs(angleScale) * lights[i].color) * scalar / 10;
+        }
+
+        if(angleScale > 0){
+            totalDiffuse  = totalDiffuse  + (angleScale * lights[i].color) * scalar;
             totalSpecular = totalSpecular + (dampedFactor * reflectivity * lights[i].color) * scalar;
+        }
     }
 
-    color = vec4(totalDiffuse,1.0) * textureColour + vec4(totalSpecular,1.0);
+    color = ambient + (1.0-shadow*0.8) * (vec4(totalDiffuse,1.0) * textureColour + vec4(totalSpecular,1.0));
+//    color = vec4(shadow, 1-shadow, 0, 1.0);
 }

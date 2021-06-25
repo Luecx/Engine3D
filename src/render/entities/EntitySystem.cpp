@@ -4,6 +4,8 @@
 #include "EntitySystem.h"
 
 #include "../../components/LightSource.h"
+#include "../../components/ShadowCaster.h"
+#include "../../math/Projection.h"
 
 void EntitySystem::prepareModel(RawModel& rawModel) {
     glBindVertexArray(rawModel.vaoID);
@@ -12,6 +14,39 @@ void EntitySystem::prepareModel(RawModel& rawModel) {
     glEnableVertexAttribArray(2);
     glEnableVertexAttribArray(3);
 }
+
+void EntitySystem::loadShadowView(ecs::ECS* ecs){
+
+    Matrix<4,4> shadowView{};
+
+    // get the caster
+    auto caster = ecs->first<ShadowCaster, ComplexTransformation>();
+    if(caster == nullptr){
+        // load an empty matrix and set it to false
+        shader.loadShadowView(false, shadowView);
+    }
+
+    auto cast = caster->get<ShadowCaster>().get();
+
+    // compute view, projection
+    Vector<3> pos = caster->get<ComplexTransformation>()->getAbsolutePosition();
+    Vector<3> target = {};
+    Matrix<4,4> view = lookAt(pos, target, {0,1,0});
+    Matrix<4,4> proj = orthogonal(-cast.radius,
+                                   cast.radius,
+                                   cast.radius,
+                                  -cast.radius,
+                                   cast.near,
+                                   cast.far);
+
+    // multiply them on the cpu (faster)
+    shadowView = proj * view;
+
+    // load it to the shader
+    shader.loadShadowView(true, shadowView);
+}
+
+
 void EntitySystem::prepareTextures(ecs::Entity* entity) {
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, entity->get<ColorMap>()->getTextureId());
@@ -35,7 +70,7 @@ void EntitySystem::prepareTextures(ecs::Entity* entity) {
         glActiveTexture(GL_TEXTURE3);
         glBindTexture(GL_TEXTURE_2D, entity->get<ParallaxMap>()->getTextureId());
         shader.loadParallaxDepth(entity->get<ParallaxMap>()->depth);
-    }else{
+    } else {
         shader.loadParallaxDepth(0);
     }
 
@@ -68,7 +103,7 @@ void EntitySystem::prepareLights(Camera* camera, ecs::ECS* ecs) {
     if (lights.size() >= MAX_LIGHTS) {
         std::sort(lights.begin(), lights.end(),
                   [](std::tuple<LightSource*, Vector<3>, float> s1, std::tuple<LightSource*, Vector<3>, float> s2) {
-                    return (std::get<2>(s1) > std::get<2>(s2));
+                      return (std::get<2>(s1) > std::get<2>(s2));
                   });
     }
 
@@ -92,12 +127,19 @@ void EntitySystem::render(ecs::ECS* ecs) {
         return;
 
     shader.start();
+
     // loading view and projection matrix
     shader.loadVPMatrix(camera->getViewMatrix(), camera->getProjectionMatrix());
     shader.loadCameraPosition(camera->getAbsolutePosition());
 
+    // load shadow stuff
+    loadShadowView(ecs);
+
     // load the light sources
     prepareLights(camera, ecs);
+
+    // load the shadow maps
+    loadShadowMaps(ecs);
 
     // enabling culling
     glEnable(GL_CULL_FACE);
@@ -118,6 +160,14 @@ void EntitySystem::render(ecs::ECS* ecs) {
 
     shader.stop();
 }
-void EntitySystem::process(ecs::ECS* ecs, double delta) {
+void EntitySystem::process(ecs::ECS* ecs, [[maybe_unused]] double delta) {
     render(ecs);
+}
+void EntitySystem::loadShadowMaps(ecs::ECS* ecs) {
+    ecs::Entity* c = ecs->first<ShadowCaster>();
+    if (c == nullptr)
+        return;
+    ShadowCaster& caster = c->get<ShadowCaster>().get();
+    glActiveTexture(GL_TEXTURE4);
+    glBindTexture(GL_TEXTURE_2D, caster.frameBuffer.attachments[0]);
 }
