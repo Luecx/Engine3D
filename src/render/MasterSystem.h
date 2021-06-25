@@ -9,8 +9,9 @@
 #include "../control/ControlSystem.h"
 #include "../ecs/ecs.h"
 #include "../glad.h"
-#include "implementations/entities/EntitySystem.h"
-#include "implementations/normals/NormalSystem.h"
+#include "entities/EntitySystem.h"
+#include "normals/NormalSystem.h"
+#include "shadow/ShadowSystem.h"
 
 #include <GLFW/glfw3.h>
 #include <vector>
@@ -22,7 +23,7 @@ class MasterSystem {
     GLFWwindow*  window;
 
     // list of systems which can be used
-
+    ShadowSystem  shadowSystem;
     EntitySystem  entitySystem;
     NormalSystem  normalSystem;
 
@@ -61,6 +62,10 @@ class MasterSystem {
         system = ecs.spawn();
         system->assign<MasterSystem*>(this);
         system->assign<GLFWwindow*>(window);
+
+        shadowSystem = {};
+        shadowSystem.enable();
+        ecs.addSystem(&shadowSystem);
 
         entitySystem = {};
         entitySystem.enable();

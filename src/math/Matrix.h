@@ -99,7 +99,6 @@ template<int M, int N> class Matrix {
         (*this)(3, 1)       = t13;
     }
 
-
     template<int J> Matrix<M, J> operator*(const Matrix<N, J>& other) {
         Matrix<M, J> res {};
         for (int i = 0; i < M; i++) {

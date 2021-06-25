@@ -70,6 +70,11 @@ RawModel loadToVao(std::vector<float>& positions, std::vector<int>& indices) {
     unbindVAO();
     return RawModel {vaoID,(int) indices.size()};
 }
-RawModel loadToVao2D(float* positions, float* textureCoords) {
-    return RawModel {0, 0};
+RawModel loadToVao2D(std::vector<float>& positions, std::vector<float>& textureCoords) {
+    GLuint vaoID = createVAO();
+    storeDataInAttributeList(0, 2, positions);
+    storeDataInAttributeList(1, 2, textureCoords);
+    unbindVAO();
+    return RawModel {vaoID,(int) positions.size()};
+
 }

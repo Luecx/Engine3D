@@ -19,7 +19,7 @@ struct Vertex {
     int                    textureIndex    = -1;
     int                    normalIndex     = -1;
     std::vector<Vector<3>> tangents {};
-    Vector<3>              averagedTangent;
+    Vector<3>              averagedTangent{};
 };
 
 

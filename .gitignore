@@ -6,3 +6,5 @@ cmake-build-debug/
 res/
 
 src - Kopie/
+
+cmake-build-release/

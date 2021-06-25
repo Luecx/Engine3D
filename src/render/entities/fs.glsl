@@ -52,11 +52,10 @@ uniform int lightCount;
 vec2 transformTexCoords(vec2 texCoords, vec3 viewDir){
 
 
-    const float minLayers = 8.0;
-    const float maxLayers = 32.0;
-    float numLayers = mix(maxLayers, minLayers, max(dot(vec3(0.0, 0.0, 1.0), viewDir), 0.0));
-//    float numLayers = 10;
-
+    // number of depth layers
+    const float minLayers = 8;
+    const float maxLayers = 32;
+    float numLayers = mix(maxLayers, minLayers, abs(dot(vec3(0.0, 0.0, 1.0), viewDir)));
     // calculate the size of each layer
     float layerDepth = 1.0 / numLayers;
     // depth of current layer
@@ -102,6 +101,8 @@ void main()
     // compute parallax if needed
     if(parallaxDepth != 0){
         textureCoords = transformTexCoords(textureCoords, fsIn.tangentCameraPos);
+        if(textureCoords.x > 1.0 || textureCoords.y > 1.0 || textureCoords.x < 0.0 || textureCoords.y < 0.0)
+            discard;
     }
     vec4 textureColour = texture(colorMap,textureCoords * textureStretch);
 

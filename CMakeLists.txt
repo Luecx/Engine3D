@@ -35,10 +35,10 @@ add_executable(Engine3D
         src/camera/Camera.h
         src/camera/PerspectiveCamera.cpp
         src/camera/PerspectiveCamera.h
-        src/render/implementations/entities/EntityShader.h
-        src/render/implementations/entities/EntitySystem.h
-        src/render/implementations/normals/NormalShader.h
-        src/render/implementations/normals/NormalSystem.h
+        src/render/entities/EntityShader.h
+        src/render/entities/EntitySystem.h
+        src/render/normals/NormalShader.h
+        src/render/normals/NormalSystem.h
         src/material/Texture.cpp
         src/material/Texture.h
         src/material/ColorMap.h
@@ -73,11 +73,25 @@ add_executable(Engine3D
         src/material/TextureStretch.h
         src/control/ControlSystem.h
         src/control/ControlSystem.cpp
-        src/transformation/angle.h)
+        src/math/angle.h
+        src/math/Projection.h
+        src/math/Projection.cpp
+        src/math/angle.cpp
+        src/config.h
+        src/render/entities/EntitySystem.cpp
+        src/render/entities/EntityShader.cpp
+        src/render/shadow/ShadowShader.cpp
+        src/render/shadow/ShadowShader.h
+        src/render/shadow/ShadowSystem.cpp
+        src/render/shadow/ShadowSystem.h
+        src/buffer/FrameBufferObject.cpp
+        src/buffer/FrameBufferObject.h
+        src/components/ShadowCaster.cpp src/components/ShadowCaster.h)
 
 
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DDOUBLE_PRECISION")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -Wshadow")
 
 target_link_libraries(Engine3D glfw)
 target_link_libraries(Engine3D OpenGL::GL)

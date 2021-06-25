@@ -4,8 +4,9 @@
 
 #include "Transformation.h"
 
+#include "../math/angle.h"
+
 #include <iostream>
-#include "angle.h"
 
 Transformation::Transformation(const Vector<3>& position, const Vector<3>& rotation,
                                      const Vector<3>& scale)

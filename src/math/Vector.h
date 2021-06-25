@@ -48,7 +48,6 @@ template<int M> class Vector {
     }
     void      clear() { std::memset(values, 0, M * sizeof(Precision)); }
     Precision length() { return sqrt((*this) * (*this)); }
-
     Precision operator*(const Vector<M>& other) {
         Precision sum = 0;
         for (int i = 0; i < M; i++) {
@@ -57,7 +56,19 @@ template<int M> class Vector {
         return sum;
     }
 
-    Vector<M> operator*(Precision other) {
+    Vector<M> cross(const Vector<M>& other) const{
+        static_assert(M == 3);
+        Vector<M> res{};
+
+
+        res[0] =   (*this)[1] * other[2] - (*this)[2] * other[1];
+        res[1] = -((*this)[0] * other[2] - (*this)[2] * other[0]);
+        res[2] =   (*this)[0] * other[1] - (*this)[1] * other[0];
+
+        return res;
+    }
+
+    Vector<M> operator*(Precision other) const {
         Vector<M> vec {*this};
         vec *= other;
         return vec;
@@ -68,7 +79,7 @@ template<int M> class Vector {
         }
         return *this;
     }
-    Vector<M> operator+(const Vector<M>& other) {
+    Vector<M> operator+(const Vector<M>& other) const{
         Vector<M> vec {*this};
         vec += other;
         return vec;
@@ -79,7 +90,7 @@ template<int M> class Vector {
         }
         return *this;
     }
-    Vector<M> operator-(const Vector<M>& other) {
+    Vector<M> operator-(const Vector<M>& other) const{
         Vector<M> vec {*this};
         vec -= other;
         return vec;
