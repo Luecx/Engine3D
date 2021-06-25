@@ -20,7 +20,7 @@ template<typename... RTypes> struct EntitySubSet;
 typedef uint32_t        ID;
 typedef std::type_index Hash;
 
-#define INVALID_ID (-1)
+#define INVALID_ID ID(-1)
 
 }    // namespace ecs
 #endif    // ECS_ECS_TYPES_H_

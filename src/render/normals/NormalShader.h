@@ -5,8 +5,8 @@
 #ifndef ENGINE3D_SRC_RENDER_IMPLEMENTATIONS_NORMALS_NORMALSHADER_H_
 #define ENGINE3D_SRC_RENDER_IMPLEMENTATIONS__NORMALS_NORMALSHADER_H_
 
-#include "../../../material/NormalMap.h"
-#include "../../ShaderProgram.h"
+#include "../../material/NormalMap.h"
+#include "../ShaderProgram.h"
 
 #define MAX_LIGHTS_ENTITY_SHADER 4
 
@@ -20,9 +20,9 @@ class NormalShader : public ShaderProgram {
 
     public:
     NormalShader() : ShaderProgram(
-            R"(C:\Users\Luecx\CLionProjects\Engine3D\src\render\implementations\normals\vs.glsl)",
-            R"(C:\Users\Luecx\CLionProjects\Engine3D\src\render\implementations\normals\fs.glsl)",
-            R"(C:\Users\Luecx\CLionProjects\Engine3D\src\render\implementations\normals\gs.glsl)") {
+            R"(C:\Users\Luecx\CLionProjects\Engine3D\src\render\normals\vs.glsl)",
+            R"(C:\Users\Luecx\CLionProjects\Engine3D\src\render\normals\fs.glsl)",
+            R"(C:\Users\Luecx\CLionProjects\Engine3D\src\render\normals\gs.glsl)") {
     }
 
     protected:

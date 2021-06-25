@@ -4,7 +4,7 @@
 #include "ColorMap.h"
 ColorMap::ColorMap() {
 }
-ColorMap::ColorMap(GLuint texture_id, int width, int height) : Texture(texture_id, width, height) {
+ColorMap::ColorMap(GLuint texture_id, int p_width, int p_height) : Texture(texture_id, p_width, p_height) {
 }
 ColorMap::ColorMap(Texture&& other) : Texture(other) {
 }

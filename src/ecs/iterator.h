@@ -23,13 +23,12 @@ template<typename... RTypes> struct EntityIterator {
     reference operator*() const { return *m_ptr; }
     pointer   operator->() { return m_ptr; }
 
-    EntityIterator(pointer m_ptr, pointer m_end) : m_ptr(m_ptr), m_end(m_end) {
+    EntityIterator(pointer p_ptr, pointer p_end) : m_ptr(p_ptr), m_end(p_end) {
 
-        while (m_ptr != m_end
-               && (*m_ptr == nullptr || *m_ptr != nullptr && !(*m_ptr)->has<RTypes...>())) {
-            m_ptr++;
+        while (p_ptr != p_end && (*p_ptr == nullptr || (*p_ptr != nullptr && !(*p_ptr)->has<RTypes...>()))) {
+            p_ptr++;
         }
-        this->m_ptr = m_ptr;
+        this->m_ptr = p_ptr;
     }
 
     // Prefix increment
@@ -38,7 +37,7 @@ template<typename... RTypes> struct EntityIterator {
         if (m_ptr == m_end)
             return *this;
         while (m_ptr != m_end
-               && (*m_ptr == nullptr || *m_ptr != nullptr && !(*m_ptr)->has<RTypes...>())) {
+               && (*m_ptr == nullptr || (*m_ptr != nullptr && !(*m_ptr)->has<RTypes...>()))) {
             m_ptr++;
         }
         return *this;
@@ -60,7 +59,7 @@ template<typename... RTypes> struct EntityIterator {
 template<typename... RTypes> struct EntitySubSet {
     std::vector<Entity*>* entities {};
 
-    EntitySubSet(std::vector<Entity*>* entities) : entities(entities) {}
+    EntitySubSet(std::vector<Entity*>* p_entities) : entities(p_entities) {}
 
     EntityIterator<RTypes...> begin() {
         return EntityIterator<RTypes...> {entities->begin().base(), entities->end().base()};

@@ -45,7 +45,7 @@ struct ECS : public System {
             entities.end());
 
         // renumber entities
-        for (int i = 0; i < entities.size(); i++) {
+        for (size_t i = 0; i < entities.size(); i++) {
             entities[i]->entityID = i;
         }
     }

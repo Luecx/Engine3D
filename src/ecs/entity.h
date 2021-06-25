@@ -21,7 +21,7 @@ struct Entity {
     friend ECS;
 
     public:
-    Entity(ECS* ecs) { this->ecs = ecs; }
+    Entity(ECS* p_ecs) { this->ecs = p_ecs; }
     virtual ~Entity() { removeAll(); }
 
     template<typename T> bool has() {

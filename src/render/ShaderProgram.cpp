@@ -80,7 +80,7 @@ int ShaderProgram::loadShader(std::string& file, int type) {
     try {
         std::getline(std::ifstream(file), shaderSource, '\0');
     } catch (...) {
-        printf("%-13s %-100s %-20s%n", "Compile", ("<" + file + ">").c_str(), "Status = NOT EXISTING SOURCE");
+        printf("%-13s %-100s %-20s\n", "Compile", ("<" + file + ">").c_str(), "Status = NOT EXISTING SOURCE");
         fflush(stdout);
         return 0;
     }

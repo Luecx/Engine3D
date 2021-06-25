@@ -5,12 +5,12 @@
 #ifndef ENGINE3D_SRC_RENDER_IMPLEMENTATIONS_NORMALS_NORMALSYSTEM_H_
 #define ENGINE3D_SRC_RENDER_IMPLEMENTATIONS_NORMALS_NORMALSYSTEM_H_
 
-#include "../../../material/ColorMap.h"
-#include "../../../material/LightReflection.h"
-#include "../../../material/SpecularMap.h"
-#include "../../../material/TextureStretch.h"
-#include "../../../model/RawModel.h"
-#include "../../RenderSystem.h"
+#include "../../material/ColorMap.h"
+#include "../../material/LightReflection.h"
+#include "../../material/SpecularMap.h"
+#include "../../material/TextureStretch.h"
+#include "../../model/RawModel.h"
+#include "../RenderSystem.h"
 #include "NormalShader.h"
 
 struct DisplayNormal{
@@ -20,7 +20,7 @@ struct DisplayNormal{
 class NormalSystem : public RenderSystem<NormalShader>, public ecs::System {
 
     public:
-    void prepareModel(RawModel& rawModel, ecs::Entity* entity) {
+    void prepareModel(RawModel& rawModel) {
         glBindVertexArray(rawModel.vaoID);
         glEnableVertexAttribArray(0);
         glEnableVertexAttribArray(1);
@@ -51,7 +51,7 @@ class NormalSystem : public RenderSystem<NormalShader>, public ecs::System {
 
         for (auto& entity : ecs->each<ComplexTransformation, RawModel, DisplayNormal>()) {
 
-            prepareModel(entity->get<RawModel>().get(), entity);
+            prepareModel(entity->get<RawModel>().get());
 
             shader.loadTransformationMatrix(entity->get<ComplexTransformation>()->getAbsoluteTransformationMatrix());
 
@@ -61,7 +61,7 @@ class NormalSystem : public RenderSystem<NormalShader>, public ecs::System {
         shader.stop();
     }
 
-    void process(ecs::ECS* ecs, double delta) override {
+    void process(ecs::ECS* ecs, [[maybe_unused]] double delta) override {
         render(ecs);
     }
 };

@@ -5,8 +5,8 @@
 #ifndef ENGINE3D_COMPONENT_GROUPABLEGAMEOBJECT_H_
 #define ENGINE3D_COMPONENT_GROUPABLEGAMEOBJECT_H_
 
+#include "../math/angle.h"
 #include "Transformation.h"
-#include "angle.h"
 
 class ComplexTransformation : public Transformation {
 
@@ -14,35 +14,34 @@ class ComplexTransformation : public Transformation {
     ComplexTransformation*              parent = nullptr;
     std::vector<ComplexTransformation*> childs {};
 
-    Matrix<4, 4>                      absoluteTransformationMatrix {};
-    Vector<3>                         absolutePosition {};
+    Matrix<4, 4>                        absoluteTransformationMatrix {};
+    Vector<3>                           absolutePosition {};
 
-    bool                              absoluteOutdated = true;
+    bool                                absoluteOutdated = true;
 
     public:
-    ComplexTransformation(const Vector<3>& position = {}, const Vector<3>& rotation = {},
-                        const Vector<3>& scale = {1, 1, 1});
+    ComplexTransformation(const Vector<3>& position = {}, const Vector<3>& rotation = {}, const Vector<3>& scale = {1, 1, 1});
 
     virtual ~ComplexTransformation();
 
-    Matrix<4, 4>&                     getAbsoluteTransformationMatrix();
+    Matrix<4, 4>&                       getAbsoluteTransformationMatrix();
 
-    Vector<3>&                        getAbsolutePosition();
-    Vector<3>                        getXAxis();
-    Vector<3>                        getYAxis();
-    Vector<3>                        getZAxis();
+    Vector<3>&                          getAbsolutePosition();
+    Vector<3>                           getXAxis();
+    Vector<3>                           getYAxis();
+    Vector<3>                           getZAxis();
 
-    void                              setAbsoluteOutdated();
+    void                                setAbsoluteOutdated();
 
-    bool                              hasParent();
+    bool                                hasParent();
 
-    bool                              setParent(ComplexTransformation* parent);
+    bool                                setParent(ComplexTransformation* parent);
 
-    bool                              removeParent();
+    bool                                removeParent();
 
-    bool                              addChild(ComplexTransformation* child);
+    bool                                addChild(ComplexTransformation* child);
 
-    bool                              removeChild(ComplexTransformation* child);
+    bool                                removeChild(ComplexTransformation* child);
 
     std::vector<ComplexTransformation*> getChilds();
 
