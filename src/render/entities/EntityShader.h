@@ -21,8 +21,7 @@ class EntityShader : public ShaderProgram {
     int loc_lightPosition[MAX_LIGHTS];
     int loc_lightColor[MAX_LIGHTS];
     int loc_lightFactors[MAX_LIGHTS];
-    int loc_shineDamper;
-    int loc_reflectivity;
+    int loc_shininess;
     int loc_useNormalMap;
     int loc_useSpecularMap;
     int loc_useShadowMap;
@@ -51,7 +50,7 @@ class EntityShader : public ShaderProgram {
     void loadLight(int index, Vector<3>& position, Vector<3>& color, Vector<3>& factors);
     void loadMaterialMapUsage(bool useNormalMap, bool useSpecularMap);
     void loadParallaxDepth(float parallaxDepth);
-    void loadMaterialData(float shineDamper,float reflectivity);
+    void loadMaterialData(float shininess);
     void loadTextureStretch(float textureStretch);
 };
 

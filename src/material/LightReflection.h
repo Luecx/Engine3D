@@ -7,8 +7,7 @@
 
 struct LightReflection{
 
-    float shineDamper;
-    float reflectivity;
+    float shininess;
 
 };
 

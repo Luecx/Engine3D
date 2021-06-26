@@ -46,6 +46,7 @@ class MasterSystem {
 
         /* Make the window's context current */
         glfwMakeContextCurrent(window);
+//        glfwSwapInterval( 0 );
 
         if (!gladLoadGLLoader((GLADloadproc) glfwGetProcAddress)) {
             std::cout << "Failed to initialize OpenGL context" << std::endl;
@@ -88,6 +89,8 @@ class MasterSystem {
             //        system.render(camera, &ecs);
 
             ecs.process(currentTime - previousTime);
+
+
 
             /* Swap front and back buffers */
             glfwSwapBuffers(window);

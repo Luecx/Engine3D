@@ -79,9 +79,9 @@ void EntitySystem::prepareTextures(ecs::Entity* entity) {
 void EntitySystem::prepareMaterial(ecs::Entity* entity) {
     if (entity->has<LightReflection>()) {
         LightReflection& ref = entity->get<LightReflection>().get();
-        shader.loadMaterialData(ref.shineDamper, ref.reflectivity);
+        shader.loadMaterialData(ref.shininess);
     } else {
-        shader.loadMaterialData(1.0f, 0.3f);
+        shader.loadMaterialData(1.0f);
     }
 
     if (entity->has<TextureStretch>()) {

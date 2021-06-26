@@ -20,8 +20,7 @@ void EntityShader::getAllUniformLocations() {
         loc_lightColor   [i] = ShaderProgram::getUniformLocation("lights[" + std::to_string(i) + "].color");
         loc_lightFactors [i] = ShaderProgram::getUniformLocation("lights[" + std::to_string(i) + "].factors");
     }
-    loc_shineDamper          = ShaderProgram::getUniformLocation("shineDamper");
-    loc_reflectivity         = ShaderProgram::getUniformLocation("reflectivity");
+    loc_shininess            = ShaderProgram::getUniformLocation("shininess");
     loc_useNormalMap         = ShaderProgram::getUniformLocation("useNormalMap");
 //    loc_useSpecularMap       = ShaderProgram::getUniformLocation("useSpecularMap");
     loc_useShadowMap         = ShaderProgram::getUniformLocation("useShadowMap");
@@ -74,9 +73,8 @@ void EntityShader::loadMaterialMapUsage(bool useNormalMap, bool useSpecularMap) 
 void EntityShader::loadParallaxDepth(float parallaxDepth) {
     loadFloat(loc_parallaxDepth, parallaxDepth);
 }
-void EntityShader::loadMaterialData(float shineDamper, float reflectivity) {
-    loadFloat(loc_shineDamper, shineDamper);
-    loadFloat(loc_reflectivity, reflectivity);
+void EntityShader::loadMaterialData(float shininess) {
+    loadFloat(loc_shininess, shininess);
 }
 void EntityShader::loadTextureStretch(float textureStretch) {
     loadFloat(loc_textureStretch, textureStretch);

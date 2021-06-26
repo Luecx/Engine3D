@@ -15,8 +15,7 @@ in VS_OUT{
 out vec4 color;
 
 // material
-uniform float shineDamper;
-uniform float reflectivity;
+uniform float shininess;
 
 // texture stretching
 uniform float textureStretch;
@@ -124,66 +123,73 @@ float computeShadowIntensity(vec4 lightSpace){
     return shadow;
 }
 
+vec3 computeLight(int index, vec3 unitNormal, vec2 texCoords, float shadow){
+
+    // normalize the view direction
+    vec3 viewDir    = normalize(fsIn.tangentCameraPos);
+    // normalize the direction to the light
+    vec3 lightDir   = normalize(fsIn.tangentLightPos[index]);
+    // compute the halfway direction for blinn phong
+    vec3 halfwayDir = normalize(lightDir + viewDir);
+
+    // compute the angle between the normal and the light source for diffuse shading
+    float diff = max(dot(unitNormal, lightDir), 0.0);
+
+    // compute the distance between the fragment and the light source
+    float dist       = length(fsIn.tangentLightPos[index]);
+
+    // scale for the intensity
+    float scalar     = lights[index].factors.x * pow(lights[index].factors.y, lights[index].factors.z * dist);
+
+    // constant for ambient light
+    float ambi       = 0.15;
+
+    // constant for specular
+    float spec = pow(max(dot(unitNormal, halfwayDir), 0.0), shininess);
+
+    // compute the light strength at the given distance
+    vec3 ambient     = lights[index].color * ambi * vec3(texture(colorMap, texCoords));
+    vec3 diffuse     = lights[index].color * diff * vec3(texture(colorMap, texCoords));
+    vec3 specular    = lights[index].color * spec * vec3(texture(colorMap, texCoords));
+
+    return (ambient + (1.0 - shadow) * (diffuse + specular)) * scalar;
+
+}
+
 void main()
 {
 
     vec2 textureCoords = fsIn.texCoords;
     // compute parallax if needed
-    if(parallaxDepth != 0){
+    if (parallaxDepth != 0){
         textureCoords = transformTexCoords(textureCoords, fsIn.tangentCameraPos);
-        if(textureCoords.x > 1.0 || textureCoords.y > 1.0 || textureCoords.x < 0.0 || textureCoords.y < 0.0)
-            discard;
+        if (textureCoords.x > 1.0 || textureCoords.y > 1.0 || textureCoords.x < 0.0 || textureCoords.y < 0.0)
+        discard;
     }
-    vec4 textureColour = texture(colorMap,textureCoords * textureStretch);
+    vec4 textureColour = texture(colorMap, textureCoords * textureStretch);
 
     // compute shadows
     float shadow = 0;
-    if(useShadowMap){
+    if (useShadowMap){
         shadow = computeShadowIntensity(fsIn.fragPosLightSpace);
     }
 
-    vec3 lightColor = vec3(0,0,0);
-    vec3 unitNormal = vec3(0,0,1);
+    vec3 lightColor = vec3(0, 0, 0);
+    vec3 unitNormal = vec3(0, 0, 1);
 
     // adjust the normal using the TBN matrix if normal mapping is supported
-    if(useNormalMap){
+    if (useNormalMap){
         unitNormal = texture(normalMap, textureCoords * textureStretch).rgb;
         unitNormal = unitNormal * 2.0 - 1.0;
         unitNormal = normalize(unitNormal);
     }
 
-    // dont do any diffuse lighting if there are no lights at all
-    vec3 totalDiffuse   = vec3(lightCount == 0 ? 1:0);
-    vec3 totalSpecular  = vec3(0,0,0);
-
-    // add some basic offset for dark areas
-    vec4 ambient = 0.15 * textureColour;
-
-    vec3 unitVectorToCamera = normalize(fsIn.tangentCameraPos);
+    // summarize light sources
+    vec3 lightStrength = vec3(0, 0, 0);
 
     for(int i = 0; i < lightCount; i++){
-        float dist       = length(fsIn.tangentLightPos[i]);
-        vec3  unitLight  = normalize(fsIn.tangentLightPos[i]);
-        float scalar     = lights[i].factors.x * pow(lights[i].factors.y, lights[i].factors.z * dist);
-        float angleScale = dot(unitLight, unitNormal);
-
-        vec3  lightDirection = -unitLight;
-        vec3  reflectedLight = reflect(lightDirection, unitNormal);
-
-        float specularFactor = max(0.0,dot(reflectedLight, normalize(fsIn.tangentCameraPos)));
-        float dampedFactor   = pow(specularFactor,shineDamper);
-
-
-        if(angleScale < 0){
-            totalDiffuse  = totalDiffuse  + (abs(angleScale) * lights[i].color) * scalar / 10;
-        }
-
-        if(angleScale > 0){
-            totalDiffuse  = totalDiffuse  + (angleScale * lights[i].color) * scalar;
-            totalSpecular = totalSpecular + (dampedFactor * reflectivity * lights[i].color) * scalar;
-        }
+        lightStrength += computeLight(i, unitNormal, textureCoords, shadow);
     }
 
-    color = ambient + (1.0-shadow*0.8) * (vec4(totalDiffuse,1.0) * textureColour + vec4(totalSpecular,1.0));
-//    color = vec4(shadow, 1-shadow, 0, 1.0);
+    color = vec4(lightStrength, 1.0);
 }

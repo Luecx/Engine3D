@@ -35,6 +35,7 @@ struct CustomSystem : public ecs::System{
         lightPos[2] = 20 * sin(time);
 
 
+        std::cout <<"\r"<< 1.0 / delta << " fps" << std::flush;
 
         ecs::Entity* entity = ecs->first<Ball,ComplexTransformation>();
 
@@ -88,13 +89,13 @@ int main() {
     entity->assign<ComplexTransformation>(Vector<3> {0,10,0}, Vector<3> {0, 0, 0}, Vector<3> {1,1,1});
     entity->assign<RawModel>(modelIco);
     entity->assign<ColorMap>(texture);
-    entity->assign<LightReflection>(1.f, 0.2f);
+    entity->assign<LightReflection>(32.f);
     entity->assign<Ball>();
 
     // light source
     entity2->assign<ColorMap>(texture);
     entity2->assign<RawModel>(modelIco);
-    entity2->assign<LightReflection>(1.f, 0.2f);
+    entity2->assign<LightReflection>(1.f);
     entity2->assign<LightSource>(Vector<3>(243.0 / 255.0, 229.0 / 255.0, 188.0 / 255.0), Vector<3>{1,0.5,0.01});
     entity2->assign<ShadowCaster>(20.0,0.1,50.0);
     entity2->assign<ComplexTransformation>(Vector<3>(20,20,20),Vector<3>(0,0,0),Vector<3>(0.1,0.1,0.1));
@@ -103,7 +104,7 @@ int main() {
     entity3->assign<ComplexTransformation>(Vector<3> {0, -1, 0}, Vector<3> {0, 0, 0}, Vector<3> {10,10,10});
     entity3->assign<ColorMap>(texture);
     entity3->assign<RawModel>(groundModel);
-    entity3->assign<LightReflection>(1.f, 0.2f);
+    entity3->assign<LightReflection>(32.f);
 
     master.mainloop();
     return 0;
