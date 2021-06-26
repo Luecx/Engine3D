@@ -14,14 +14,44 @@
 
 
 
+struct Ball{
+    Vector<3> velocity{};
+};
+
+struct CollisionEvent{
+
+    ecs::Entity* entity;
+
+};
+
 struct CustomSystem : public ecs::System{
     double time = 0;
     void process(ecs::ECS* ecs, double delta) override {
-        time += delta / 5;
-        ecs::Entity* entity = ecs->first<LightSource>();
-        entity->get<ComplexTransformation>()->getPosition()[0] = sin(time) * 1;
-        entity->get<ComplexTransformation>()->getPosition()[2] = cos(time) * 1;
+        time += delta;
+
+        ecs::Entity* light = ecs->first<LightSource, ComplexTransformation>();
+        Vector<3>& lightPos = light->get<ComplexTransformation>()->getPosition();
+        lightPos[0] = 20 * cos(time);
+        lightPos[2] = 20 * sin(time);
+
+
+
+        ecs::Entity* entity = ecs->first<Ball,ComplexTransformation>();
+
+        Vector<3>& velocity = entity->get<Ball>()->velocity;
+        Vector<3>& position = entity->get<ComplexTransformation>()->getPosition();
+
+        velocity[1] += -9.81 * delta;
+        position[1] += velocity[1] * delta;
+        if(position[1] <= 0){
+            position[1] = 0;
+            velocity[1] = -velocity[1] * 0.8;
+        }
     }
+};
+
+struct CollisionListener : public ecs::EventListener<CollisionEvent>{
+
 };
 
 int main() {
@@ -30,10 +60,11 @@ int main() {
 
 
     PerspectiveCamera camera {};
-    camera.setPosition({0,1,1});
+    camera.setPosition({0,3,3});
+    camera.setRotation({-4,0,0});
     ecs::Entity* cameraEntity = master.ecs.spawn();
     cameraEntity->assign<Camera*>(&camera);
-    cameraEntity->assign<SimpleControl>();
+    cameraEntity->assign<SimpleControl>(2.0f,2.0f);
 
     RawModel       modelIco       = loadOBJ(R"(C:\Users\Luecx\CLionProjects\Engine3D\res\models\sphere.obj)");
     RawModel       groundModel    = loadOBJ(R"(C:\Users\Luecx\CLionProjects\Engine3D\res\models\groundSmall.obj)");
@@ -53,28 +84,26 @@ int main() {
     CustomSystem custom_system{};
     master.ecs.addSystem(&custom_system);
 
-    entity->assign<ComplexTransformation>(Vector<3> {0,0.1,0}, Vector<3> {0, 0, 0}, Vector<3> {1,1,1});
-    entity->assign<RawModel>(model);
-    entity->assign<ColorMap>(statureTexture);
-    entity->assign<NormalMap>(normalTexture);
-//    entity->assign<ParallaxMap>(dBrick, 0.01f);
-    entity->assign<TextureStretch>(5.0f);
+    // ball
+    entity->assign<ComplexTransformation>(Vector<3> {0,10,0}, Vector<3> {0, 0, 0}, Vector<3> {1,1,1});
+    entity->assign<RawModel>(modelIco);
+    entity->assign<ColorMap>(texture);
     entity->assign<LightReflection>(1.f, 0.2f);
-//    entity->assign<DisplayNormal>();
+    entity->assign<Ball>();
 
-
-    entity2->assign<ColorMap>(cBrick);
+    // light source
+    entity2->assign<ColorMap>(texture);
     entity2->assign<RawModel>(modelIco);
     entity2->assign<LightReflection>(1.f, 0.2f);
     entity2->assign<LightSource>(Vector<3>(243.0 / 255.0, 229.0 / 255.0, 188.0 / 255.0), Vector<3>{1,0.5,0.01});
-    entity2->assign<ShadowCaster>(5.0,0.1,10.0);
-    entity2->assign<ComplexTransformation>(Vector<3>(3, 1, 3),Vector<3>(0,0,0),Vector<3>(0.1,0.1,0.1));
+    entity2->assign<ShadowCaster>(20.0,0.1,50.0);
+    entity2->assign<ComplexTransformation>(Vector<3>(20,20,20),Vector<3>(0,0,0),Vector<3>(0.1,0.1,0.1));
 
-    entity3->assign<ComplexTransformation>(Vector<3> {0, 0, 0}, Vector<3> {0, 0, 0}, Vector<3> {2,2,2});
+    // floor
+    entity3->assign<ComplexTransformation>(Vector<3> {0, -1, 0}, Vector<3> {0, 0, 0}, Vector<3> {10,10,10});
     entity3->assign<ColorMap>(texture);
     entity3->assign<RawModel>(groundModel);
     entity3->assign<LightReflection>(1.f, 0.2f);
-//    entity3->assign<DisplayNormal>();
 
     master.mainloop();
     return 0;
