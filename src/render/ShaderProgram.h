@@ -12,11 +12,13 @@
 #include <fstream>
 #include <iostream>
 #include <string>
+#include <unordered_map>
+
 
 class ShaderProgram {
 
     private:
-    bool        created = false;
+    bool        created  = false;
     bool        warnings = false;
 
     std::string vertexFile {};
@@ -32,16 +34,22 @@ class ShaderProgram {
     GLuint      tesselationControlShaderID    = 0;
     GLuint      tesselationEvaluationShaderID = 0;
 
+    std::unordered_map<std::string, int> uniformUsageMap;
+
     public:
     ShaderProgram(std::string vertex_file, std::string fragment_file);
     ShaderProgram(std::string vertex_file, std::string fragment_file, std::string geometry_file);
-    ShaderProgram(std::string vertex_file, std::string fragment_file, std::string tesselation_control_file,
+    ShaderProgram(std::string vertex_file,
+                  std::string fragment_file,
+                  std::string tesselation_control_file,
                   std::string tesselation_evaluation_file);
 
-    virtual ~ShaderProgram();
 
     private:
     int loadShader(std::string& file, int type);
+    void checkUnusedUniforms();
+    void checkShaderCompilation(const std::string& file, unsigned int shaderID);
+    void checkProgramLinking();
 
     protected:
     virtual void getAllUniformLocations() {};
@@ -66,6 +74,7 @@ class ShaderProgram {
     void createShader();
     void start();
     void stop();
+    void destroy();
 };
 
 #endif    // ENGINE3D_SRC_SHADER_SHADERPROGRAM_H_

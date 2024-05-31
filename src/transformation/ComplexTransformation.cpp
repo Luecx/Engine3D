@@ -5,9 +5,10 @@
 #include "ComplexTransformation.h"
 
 #include <iostream>
-ComplexTransformation::ComplexTransformation(const Vector<3>& position, const Vector<3>& rotation, const Vector<3>& scale)
-    : Transformation(position, rotation, scale) {
-}
+ComplexTransformation::ComplexTransformation(const Vector<3>& position,
+                                             const Vector<3>& rotation,
+                                             const Vector<3>& scale)
+    : Transformation(position, rotation, scale) {}
 Matrix<4, 4>& ComplexTransformation::getAbsoluteTransformationMatrix() {
     if (this->absoluteOutdated) {
         updateAbsoluteTransformationMatrix();
@@ -25,19 +26,25 @@ Vector<3> ComplexTransformation::getXAxis() {
     if (this->absoluteOutdated) {
         updateAbsoluteTransformationMatrix();
     }
-    return {absoluteTransformationMatrix(0, 0), absoluteTransformationMatrix(1, 0), absoluteTransformationMatrix(2, 0)};
+    return {absoluteTransformationMatrix(0, 0),
+            absoluteTransformationMatrix(1, 0),
+            absoluteTransformationMatrix(2, 0)};
 }
 Vector<3> ComplexTransformation::getYAxis() {
     if (this->absoluteOutdated) {
         updateAbsoluteTransformationMatrix();
     }
-    return {absoluteTransformationMatrix(0, 1), absoluteTransformationMatrix(1, 1), absoluteTransformationMatrix(2, 1)};
+    return {absoluteTransformationMatrix(0, 1),
+            absoluteTransformationMatrix(1, 1),
+            absoluteTransformationMatrix(2, 1)};
 }
 Vector<3> ComplexTransformation::getZAxis() {
     if (this->absoluteOutdated) {
         updateAbsoluteTransformationMatrix();
     }
-    return {absoluteTransformationMatrix(0, 2), absoluteTransformationMatrix(1, 2), absoluteTransformationMatrix(2, 2)};
+    return {absoluteTransformationMatrix(0, 2),
+            absoluteTransformationMatrix(1, 2),
+            absoluteTransformationMatrix(2, 2)};
 }
 
 void ComplexTransformation::setAbsoluteOutdated() {
@@ -63,7 +70,9 @@ bool ComplexTransformation::removeParent() {
     if (this->parent == nullptr) {
         return false;
     }
-    this->parent->childs.erase(std::remove(this->parent->childs.begin(), this->parent->childs.end(), this), this->parent->childs.end());
+    this->parent->childs.erase(
+        std::remove(this->parent->childs.begin(), this->parent->childs.end(), this),
+        this->parent->childs.end());
     this->parent = nullptr;
     setAbsoluteOutdated();
     return true;
@@ -92,12 +101,13 @@ void ComplexTransformation::updateAbsoluteTransformationMatrix() {
             this->parent->updateAbsoluteTransformationMatrix();
         }
 
-        this->absoluteTransformationMatrix = this->parent->absoluteTransformationMatrix * this->getTransformationMatrix();
+        this->absoluteTransformationMatrix =
+            this->parent->absoluteTransformationMatrix * this->getTransformationMatrix();
 
-        this->absolutePosition[0]          = this->absoluteTransformationMatrix(3, 0);
-        this->absolutePosition[0]          = this->absoluteTransformationMatrix(3, 1);
-        this->absolutePosition[0]          = this->absoluteTransformationMatrix(3, 2);
-        this->absoluteOutdated             = false;
+        this->absolutePosition[0] = this->absoluteTransformationMatrix(3, 0);
+        this->absolutePosition[0] = this->absoluteTransformationMatrix(3, 1);
+        this->absolutePosition[0] = this->absoluteTransformationMatrix(3, 2);
+        this->absoluteOutdated    = false;
     }
 }
 ComplexTransformation::~ComplexTransformation() {

@@ -13,9 +13,12 @@ struct Entity;
 struct ECS;
 struct System;
 struct ComponentBaseContainer;
-template<typename T> struct ComponentContainer;
-template<typename... RTypes> struct EntityIterator;
-template<typename... RTypes> struct EntitySubSet;
+template<typename T>
+struct ComponentContainer;
+template<typename... RTypes>
+struct EntityIterator;
+template<typename... RTypes>
+struct EntitySubSet;
 
 typedef uint32_t        ID;
 typedef std::type_index Hash;

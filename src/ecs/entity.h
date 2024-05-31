@@ -2,9 +2,10 @@
 // Created by Luecx on 16.06.2021.
 //
 
-#include <unordered_map>
-#include "types.h"
 #include "hash.h"
+#include "types.h"
+
+#include <unordered_map>
 
 #ifndef ECS_ECS_ENTITY_H_
 #define ECS_ECS_ENTITY_H_
@@ -21,17 +22,24 @@ struct Entity {
     friend ECS;
 
     public:
-    Entity(ECS* p_ecs) { this->ecs = p_ecs; }
-    virtual ~Entity() { removeAll(); }
+    Entity(ECS* p_ecs) {
+        this->ecs = p_ecs;
+    }
+    virtual ~Entity() {
+        removeAll();
+    }
 
-    template<typename T> bool has() {
+    template<typename T>
+    bool has() {
         Hash hash = getComponentHash<T>();
         return components.find(hash) != components.end();
     }
-    template<typename T, typename V, typename... Types> bool has() {
+    template<typename T, typename V, typename... Types>
+    bool has() {
         return has<T>() && has<V, Types...>();
     }
-    template<typename T> ComponentContainer<T>& get() {
+    template<typename T>
+    ComponentContainer<T>& get() {
         static ComponentContainer<T> emptyContainer {};
         if (entityID == INVALID_ID)
             return emptyContainer;
@@ -41,20 +49,35 @@ struct Entity {
         }
         return emptyContainer;
     }
-    template<typename T, typename... Args> void assign(Args&&... args);
-    template<typename T> void                   remove();
-    void                                        removeAll();
-    void                                        destroy();
-    ID                                          getEntityId() const { return entityID; }
+    template<typename T, typename... Args>
+    void assign(Args&&... args);
+    template<typename T>
+    void remove();
+    void removeAll();
+    void destroy();
+    ID   getEntityId() const {
+        return entityID;
+    }
 
-    bool operator==(const Entity& rhs) const { return entityID == rhs.entityID; }
-    bool operator!=(const Entity& rhs) const { return !(rhs == *this); }
-    bool operator<(const Entity& rhs) const { return entityID < rhs.entityID; }
-    bool operator>(const Entity& rhs) const { return rhs < *this; }
-    bool operator<=(const Entity& rhs) const { return !(rhs < *this); }
-    bool operator>=(const Entity& rhs) const { return !(*this < rhs); }
+    bool operator==(const Entity& rhs) const {
+        return entityID == rhs.entityID;
+    }
+    bool operator!=(const Entity& rhs) const {
+        return !(rhs == *this);
+    }
+    bool operator<(const Entity& rhs) const {
+        return entityID < rhs.entityID;
+    }
+    bool operator>(const Entity& rhs) const {
+        return rhs < *this;
+    }
+    bool operator<=(const Entity& rhs) const {
+        return !(rhs < *this);
+    }
+    bool operator>=(const Entity& rhs) const {
+        return !(*this < rhs);
+    }
 };
-
 
 }    // namespace ecs
 

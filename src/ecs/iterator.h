@@ -5,14 +5,15 @@
 #ifndef ECS_ECS_ITERATOR_H_
 #define ECS_ECS_ITERATOR_H_
 
-#include "types.h"
 #include "entity.h"
+#include "types.h"
 
 #include <vector>
 
 namespace ecs {
 
-template<typename... RTypes> struct EntityIterator {
+template<typename... RTypes>
+struct EntityIterator {
 
     using iterator_category = std::forward_iterator_tag;
     using difference_type   = std::ptrdiff_t;
@@ -20,12 +21,19 @@ template<typename... RTypes> struct EntityIterator {
     using pointer           = value_type*;    // or also value_type*
     using reference         = value_type&;    // or also value_type&
 
-    reference operator*() const { return *m_ptr; }
-    pointer   operator->() { return m_ptr; }
+    reference operator*() const {
+        return *m_ptr;
+    }
+    pointer operator->() {
+        return m_ptr;
+    }
 
-    EntityIterator(pointer p_ptr, pointer p_end) : m_ptr(p_ptr), m_end(p_end) {
+    EntityIterator(pointer p_ptr, pointer p_end)
+        : m_ptr(p_ptr)
+        , m_end(p_end) {
 
-        while (p_ptr != p_end && (*p_ptr == nullptr || (*p_ptr != nullptr && !(*p_ptr)->has<RTypes...>()))) {
+        while (p_ptr != p_end
+               && (*p_ptr == nullptr || (*p_ptr != nullptr && !(*p_ptr)->has<RTypes...>()))) {
             p_ptr++;
         }
         this->m_ptr = p_ptr;
@@ -43,8 +51,12 @@ template<typename... RTypes> struct EntityIterator {
         return *this;
     }
 
-    bool operator==(const EntityIterator<RTypes...>& rhs) const { return m_ptr == rhs.m_ptr; }
-    bool operator!=(const EntityIterator<RTypes...>& rhs) const { return !(rhs == *this); }
+    bool operator==(const EntityIterator<RTypes...>& rhs) const {
+        return m_ptr == rhs.m_ptr;
+    }
+    bool operator!=(const EntityIterator<RTypes...>& rhs) const {
+        return !(rhs == *this);
+    }
 
     friend std::ostream& operator<<(std::ostream& os, const EntityIterator& iterator) {
         os << "m_ptr: " << iterator.m_ptr;
@@ -56,10 +68,12 @@ template<typename... RTypes> struct EntityIterator {
     pointer m_end;
 };
 
-template<typename... RTypes> struct EntitySubSet {
+template<typename... RTypes>
+struct EntitySubSet {
     std::vector<Entity*>* entities {};
 
-    EntitySubSet(std::vector<Entity*>* p_entities) : entities(p_entities) {}
+    EntitySubSet(std::vector<Entity*>* p_entities)
+        : entities(p_entities) {}
 
     EntityIterator<RTypes...> begin() {
         return EntityIterator<RTypes...> {entities->begin().base(), entities->end().base()};

@@ -7,17 +7,15 @@
 
 #include "../ecs/core.h"
 
-struct SimpleControl{
+struct SimpleControl {
 
-    float forwardSpeed = 0.4;
-    float sideSpeed = 0.4;
+    float forwardSpeed  = 0.4;
+    float sideSpeed     = 0.4;
     float rotationSpeed = 60;
-
 };
 
-struct ControlSystem : public ecs::System{
+struct ControlSystem : public ecs::System {
     void process(ecs::ECS* ecs, double delta) override;
-
 };
 
 #endif    // ENGINE3D_SRC_CONTROL_CONTROLSYSTEM_H_

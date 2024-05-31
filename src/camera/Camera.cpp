@@ -7,7 +7,7 @@
 #include <iostream>
 Matrix<4, 4>& Camera::getViewMatrix() {
     if (viewMatrixOutdated) {
-        viewMatrix = getAbsoluteTransformationMatrix().invert();
+        viewMatrix         = getAbsoluteTransformationMatrix().invert();
         viewMatrixOutdated = false;
     }
     return viewMatrix;

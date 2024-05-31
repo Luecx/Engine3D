@@ -20,7 +20,9 @@ struct Transformation {
     Matrix<4, 4> transformationMatrix {};
 
     public:
-    Transformation(const Vector<3>& position={}, const Vector<3>& rotation={}, const Vector<3>& scale={1,1,1});
+    Transformation(const Vector<3>& position = {},
+                   const Vector<3>& rotation = {},
+                   const Vector<3>& scale    = {1, 1, 1});
 
     Matrix<4, 4>& getTransformationMatrix();
 
@@ -33,7 +35,7 @@ struct Transformation {
     void          setRotation(const Vector<3>& rotation);
     void          setScale(const Vector<3>& scale);
 
-    void rotate(const Vector<3>& axis, Precision angle);
+    void          rotate(const Vector<3>& axis, Precision angle);
 
     protected:
     virtual void dataChangedNotification() {};

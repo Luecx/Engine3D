@@ -8,7 +8,8 @@
 #include "../camera/Camera.h"
 #include "../ecs/ecs.h"
 
-template<typename Shader> class RenderSystem {
+template<typename Shader>
+class RenderSystem : public ecs::System {
 
     protected:
     Shader shader {};
@@ -19,6 +20,11 @@ template<typename Shader> class RenderSystem {
     }
     bool isEnabled() {
         return shader.isCreated();
+    }
+    void destroy() override {
+        GL_ERROR_CHECK();
+        shader.destroy();
+        GL_ERROR_CHECK();
     }
 
     virtual void render(ecs::ECS* ecs) = 0;

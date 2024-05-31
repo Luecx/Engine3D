@@ -9,11 +9,10 @@
 namespace ecs {
 
 struct System {
-
     virtual void process(ECS* ecs, double delta) = 0;
-
+    virtual void destroy() {};
 };
 
-}    // namespace ecs
+}  // namespace ecs
 
 #endif    // ECS_ECS_SYSTEM_H_

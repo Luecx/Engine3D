@@ -3,8 +3,9 @@
 //
 
 #include "ShadowCaster.h"
-ShadowCaster::ShadowCaster(Precision radius, Precision near, Precision far) : radius(radius), near(near), far(far){
+ShadowCaster::ShadowCaster(Precision radius, Precision near, Precision far)
+    : radius(radius)
+    , near(near)
+    , far(far) {
     this->frameBuffer.createDepthBufferAttachment(SHADOW_RESOLUTION, SHADOW_RESOLUTION);
-
-
 }

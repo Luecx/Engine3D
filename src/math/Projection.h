@@ -8,7 +8,12 @@
 #include "Matrix.h"
 #include "Precision.h"
 
-Matrix<4, 4> orthogonal(Precision left, Precision right, Precision top, Precision bot, Precision near, Precision far);
+Matrix<4, 4> orthogonal(Precision left,
+                        Precision right,
+                        Precision top,
+                        Precision bot,
+                        Precision near,
+                        Precision far);
 
 Matrix<4, 4> perspective(Precision fov, Precision aspectRatio, Precision near, Precision far);
 

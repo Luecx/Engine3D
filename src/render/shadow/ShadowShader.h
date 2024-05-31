@@ -15,8 +15,9 @@ class ShadowShader : public ShaderProgram {
     public:
     ShadowShader();
 
-    void loadTransformationMatrix(Matrix<4,4> &transformationMatrix);
-    void loadVPMatrix(Matrix<4,4> &viewMatrix,Matrix<4,4> &projectionMatrix);
+    void loadTransformationMatrix(Matrix<4, 4>& transformationMatrix);
+    void loadVPMatrix(Matrix<4, 4>& viewMatrix, Matrix<4, 4>& projectionMatrix);
+
     protected:
     void getAllUniformLocations() override;
     void bindAttributes() override;

@@ -5,10 +5,9 @@
 #ifndef ENGINE3D_SRC_MATERIAL_LIGHTREFLECTION_H_
 #define ENGINE3D_SRC_MATERIAL_LIGHTREFLECTION_H_
 
-struct LightReflection{
+struct LightReflection {
 
     float shininess;
-
 };
 
 #endif    // ENGINE3D_SRC_MATERIAL_LIGHTREFLECTION_H_

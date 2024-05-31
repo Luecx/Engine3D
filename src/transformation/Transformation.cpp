@@ -8,10 +8,12 @@
 
 #include <iostream>
 
-Transformation::Transformation(const Vector<3>& position, const Vector<3>& rotation,
-                                     const Vector<3>& scale)
-    : position(position), rotation(rotation), scale(scale) {
-}
+Transformation::Transformation(const Vector<3>& position,
+                               const Vector<3>& rotation,
+                               const Vector<3>& scale)
+    : position(position)
+    , rotation(rotation)
+    , scale(scale) {}
 
 Matrix<4, 4>& Transformation::getTransformationMatrix() {
     if (outdated) {
@@ -50,17 +52,17 @@ void Transformation::setScale(const Vector<3>& scale) {
     setOutdated();
     Transformation::scale = scale;
 }
-void Transformation::rotate(const Vector<3>& axis, Precision angle){
+void Transformation::rotate(const Vector<3>& axis, Precision angle) {
     setOutdated();
     Vector<3> axisNorm = axis;
     axisNorm.normalise();
 
-    Matrix<4,4> rotationMatrix{};
+    Matrix<4, 4> rotationMatrix {};
     rotationMatrix.identity();
     rotationMatrix.rotate3D(toRadians(angle), axisNorm);
 
-    Matrix<4,4> newTransformationMatrix = rotationMatrix * transformationMatrix;
-    Vector<3> newRotation = matrixToDegrees(newTransformationMatrix);
+    Matrix<4, 4> newTransformationMatrix = rotationMatrix * transformationMatrix;
+    Vector<3>    newRotation             = matrixToDegrees(newTransformationMatrix);
     this->setRotation(newRotation);
 
     getTransformationMatrix();

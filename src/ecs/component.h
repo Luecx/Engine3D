@@ -12,17 +12,27 @@ namespace ecs {
 
 struct ComponentBaseContainer {};
 
-template<typename T> struct ComponentContainer : public ComponentBaseContainer {
+template<typename T>
+struct ComponentContainer : public ComponentBaseContainer {
     T    component;
     bool valid = false;
 
-    explicit ComponentContainer(T& p_component) : component(p_component), valid(true) {};
+    explicit ComponentContainer(T& p_component)
+        : component(p_component)
+        , valid(true) {};
 
-    ComponentContainer() : valid(false) {}
+    ComponentContainer()
+        : valid(false) {}
 
-    T*                   operator->() { return &component; }
-    T&                   get() { return component; }
-    bool                 isValid() { return valid; }
+    T* operator->() {
+        return &component;
+    }
+    T& get() {
+        return component;
+    }
+    bool isValid() {
+        return valid;
+    }
 
     friend std::ostream& operator<<(std::ostream& os, const ComponentContainer& container) {
         os << container.component;

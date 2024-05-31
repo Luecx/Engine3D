@@ -2,14 +2,13 @@
 // Created by Luecx on 24.06.2021.
 //
 
+#include <filesystem>
+
 #include "ShadowShader.h"
 ShadowShader::ShadowShader()
-    : ShaderProgram(
-    R"(C:\Users\Luecx\CLionProjects\Engine3D\src\render\shadow\vs.glsl)",
-    R"(C:\Users\Luecx\CLionProjects\Engine3D\src\render\shadow\fs.glsl)") {
-}
+    : ShaderProgram((std::filesystem::path(__FILE__).parent_path() / "vs.glsl").string(),
+                    (std::filesystem::path(__FILE__).parent_path() / "fs.glsl").string()) {}
 void ShadowShader::getAllUniformLocations() {
-    ShaderProgram::getAllUniformLocations();
     loc_transformationMatrix = ShaderProgram::getUniformLocation("transformationMatrix");
     loc_viewMatrix           = ShaderProgram::getUniformLocation("viewMatrix");
     loc_projectionMatrix     = ShaderProgram::getUniformLocation("projectionMatrix");

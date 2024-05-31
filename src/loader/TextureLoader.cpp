@@ -3,75 +3,114 @@
 //
 #include "TextureLoader.h"
 
+#include "../core/glerror.h"
+
 #include <algorithm>
+#include <fstream>
 #include <iostream>
 
-uint8_t* loadBMP(const std::string& file, int& width, int& height){
-    // Data read from the header of the BMP file
-    unsigned char header[54];    // Each BMP file begins by a 54-bytes header
-    unsigned int  dataPos;       // Position in the file where the actual data begins
-    unsigned int  imageSize;    // = width*height*3
-    // Actual RGB data
-    // Open the file
-    FILE*         f = fopen(file.c_str(), "rb");
-    if (!f) {
-        printf("Image could not be opened\n");
-        exit(-1);
+#pragma pack(push, 1)
+struct BMPHeader {
+    uint16_t fileType;      // File type, should be BM for bitmap files
+    uint32_t fileSize;      // Size of the file in bytes
+    uint16_t reserved1;     // Reserved, should be 0
+    uint16_t reserved2;     // Reserved, should be 0
+    uint32_t offsetData;    // Offset from beginning of file to the beginning of the bitmap data
+};
+
+struct BMPInfoHeader {
+    uint32_t size;               // Size of this header
+    int32_t  width;              // Width of the bitmap in pixels
+    int32_t  height;             // Height of the bitmap in pixels
+    uint16_t planes;             // Number of color planes, must be 1
+    uint16_t bitCount;           // Number of bits per pixel
+    uint32_t compression;        // Compression method being used
+    uint32_t sizeImage;          // Size of the raw bitmap data
+    int32_t  xPixelsPerMeter;    // Horizontal resolution
+    int32_t  yPixelsPerMeter;    // Vertical resolution
+    uint32_t colorsUsed;         // Number of colors in the color palette
+    uint32_t colorsImportant;    // Number of important colors
+};
+#pragma pack(pop)
+
+uint8_t* loadBitmap(const char* filepath, int& width, int& height) {
+    BMPHeader     header;
+    BMPInfoHeader infoHeader;
+
+    std::ifstream file(filepath, std::ios::binary);
+
+    if (!file.is_open()) {
+        std::cerr << "Could not open file " << filepath << std::endl;
+        return nullptr;
     }
 
-    if (fread(header, 1, 54, f) != 54) {    // If not 54 bytes read : problem
-        printf("Not a correct BMP file\n");
-        exit(-1);
+    // Read the BMP header
+    file.read(reinterpret_cast<char*>(&header), sizeof(header));
+    if (header.fileType != 0x4D42) {    // 'BM' in hexadecimal
+        std::cerr << "Not a valid BMP file" << std::endl;
+        return nullptr;
     }
 
-    if (header[0] != 'B' || header[1] != 'M') {
-        printf("Not a correct BMP file\n");
-        exit(-1);
-    }
+    // Read the BMP info header
+    file.read(reinterpret_cast<char*>(&infoHeader), sizeof(infoHeader));
 
-    dataPos   = *(int*) &(header[0x0A]);
-    imageSize = *(int*) &(header[0x22]);
-    width     = *(int*) &(header[0x12]);
-    height    = *(int*) &(header[0x16]);
+    // Move the file cursor to the start of the bitmap data
+    file.seekg(header.offsetData, std::ios::beg);
 
-    // Some BMP files are misformatted, guess missing information
-    if (imageSize == 0)
-        imageSize = width * height * 3;    // 3 : one byte for each Red, Green and Blue transformation
-    if (dataPos == 0)
-        dataPos = 54;    // The BMP header is done that way
+    // Allocate memory for the bitmap data
+    uint8_t* data = new uint8_t[infoHeader.sizeImage];
 
-    // Create a buffer
-    auto *data = new uint8_t[imageSize]{};
+    // Read the bitmap data
+    file.read(reinterpret_cast<char*>(data), infoHeader.sizeImage);
 
-    // Read the actual data from the file into the buffer
-    fread(data, sizeof(uint8_t), imageSize, f);
+    // Close the file
+    file.close();
 
-    // Everything is in memory now, the file can be closed
-    fclose(f);
+    width  = infoHeader.width;
+    height = infoHeader.height;
+
+    // show all data in both headers
+    std::cout << "File type: " << header.fileType << std::endl;
+    std::cout << "File size: " << header.fileSize << std::endl;
+    std::cout << "Reserved 1: " << header.reserved1 << std::endl;
+    std::cout << "Reserved 2: " << header.reserved2 << std::endl;
+    std::cout << "Offset data: " << header.offsetData << std::endl;
+    std::cout << "Size: " << infoHeader.size << std::endl;
+    std::cout << "Width: " << infoHeader.width << std::endl;
+    std::cout << "Height: " << infoHeader.height << std::endl;
+    std::cout << "Planes: " << infoHeader.planes << std::endl;
+    std::cout << "Bit count: " << infoHeader.bitCount << std::endl;
+    std::cout << "Compression: " << infoHeader.compression << std::endl;
+    std::cout << "Size image: " << infoHeader.sizeImage << std::endl;
+    std::cout << "X pixels per meter: " << infoHeader.xPixelsPerMeter << std::endl;
+    std::cout << "Y pixels per meter: " << infoHeader.yPixelsPerMeter << std::endl;
+    std::cout << "Colors used: " << infoHeader.colorsUsed << std::endl;
+    std::cout << "Colors important: " << infoHeader.colorsImportant << std::endl;
+
     return data;
 }
 
-Texture loadTexture(const std::string& file) {
+std::tuple<TextureIDPtr, int, int> loadTexture(const std::string& file) {
     uint8_t* data;
-    int width;
-    int height;
-    GLuint textureID;
-
-    // load the raw data
-    if (file.find(".bmp") != std::string::npos){
-        data = loadBMP(file,  width, height);
-    }else{
-        return {};
-    }
+    int      width;
+    int      height;
 
     // generate the texture
-    glGenTextures(1, &textureID);
+    TextureIDPtr textureIDPtr = std::make_shared<TextureID>();
+    GL_ERROR_CHECK();
 
-    // "Bind" the newly created texture : all future texture functions will modify this texture
-    glBindTexture(GL_TEXTURE_2D, textureID);
+    textureIDPtr->bind();
+    GL_ERROR_CHECK();
+
+    // load the raw data
+    if (file.find(".bmp") != std::string::npos) {
+        data = loadBitmap(file.c_str(), width, height);
+    } else {
+        return {nullptr, 0, 0};
+    }
 
     // Give the image to OpenGL
-    glTexImage2D(GL_TEXTURE_2D, 0,GL_RGB, width, height, 0, GL_BGR, GL_UNSIGNED_BYTE, data);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_BGR, GL_UNSIGNED_BYTE, data);
 
     // generate mipmaps
     glGenerateMipmap(GL_TEXTURE_2D);
@@ -79,9 +118,11 @@ Texture loadTexture(const std::string& file) {
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
     glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_LOD_BIAS, -0.4f);
 
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+
     delete data;
 
-    // create the texture
-    Texture texture{textureID, width, height};
-    return texture;
+    GL_ERROR_CHECK();
+    return {textureIDPtr, width, height};
 }

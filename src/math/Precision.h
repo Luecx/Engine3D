@@ -11,5 +11,4 @@ using Precision = double;
 using Precision = float;
 #endif
 
-
-#endif //ENGINE3D_MATH_PRECISION_H_
+#endif    // ENGINE3D_MATH_PRECISION_H_

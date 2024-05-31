@@ -8,6 +8,8 @@
 #include "../math/angle.h"
 #include "Transformation.h"
 
+#include <vector>
+
 class ComplexTransformation : public Transformation {
 
     private:
@@ -20,7 +22,9 @@ class ComplexTransformation : public Transformation {
     bool                                absoluteOutdated = true;
 
     public:
-    ComplexTransformation(const Vector<3>& position = {}, const Vector<3>& rotation = {}, const Vector<3>& scale = {1, 1, 1});
+    ComplexTransformation(const Vector<3>& position = {},
+                          const Vector<3>& rotation = {},
+                          const Vector<3>& scale    = {1, 1, 1});
 
     virtual ~ComplexTransformation();
 

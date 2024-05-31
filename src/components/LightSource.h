@@ -16,9 +16,10 @@ struct LightSource {
     Vector<3> falloff;
 
     public:
-    LightSource(const Vector<3> &p_color = {1,1,1},
-                const Vector<3> &p_falloff = {1,0.5,1}) : color(p_color), falloff(p_falloff) {
-    }
+    LightSource(const Vector<3>& p_color = {1, 1, 1}, const Vector<3>& p_falloff = {1, 0.5, 1})
+        : color(p_color)
+        , falloff(p_falloff) {}
+
 };
 
 #endif    // ENGINE3D_SRC_LIGHT_LIGHTSOURCE_H_

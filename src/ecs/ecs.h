@@ -5,6 +5,7 @@
 #ifndef ECS_ECS_ECS_H_
 #define ECS_ECS_ECS_H_
 
+#include "../core/glerror.h"
 #include "component.h"
 #include "entity.h"
 #include "event.h"
@@ -29,7 +30,9 @@ struct ECS : public System {
 
     friend Entity;
 
-    virtual ~ECS() { destroyAll(); }
+    virtual ~ECS() {
+        destroyAll();
+    }
 
     Entity* spawn() {
         Entity* entity   = new Entity(this);
@@ -40,7 +43,8 @@ struct ECS : public System {
     void shrinkIndices() {
         // remove all elements with an invalid ID -> has been removed previously
         entities.erase(
-            std::remove_if(entities.begin(), entities.end(),
+            std::remove_if(entities.begin(),
+                           entities.end(),
                            [](const Entity* o) { return o == nullptr || o->entityID == INVALID_ID; }),
             entities.end());
 
@@ -50,21 +54,32 @@ struct ECS : public System {
         }
     }
 
+    void destroy() {
+        destroyAll();
+        for (System * sys : systems) {
+            sys->destroy();
+        }
+        systems.clear();
+    }
+
     private:
     void componentRemoved(Hash hash, Entity* entity) {
         const ID entityID = entity->entityID;
-        componentEntityList[hash].erase(
-            std::remove_if(componentEntityList[hash].begin(), componentEntityList[hash].end(),
-                           [&entityID](const Entity* o) {
-                               return o->entityID == entityID || o->entityID == INVALID_ID;
-                           }),
-            componentEntityList[hash].end());
+        componentEntityList[hash].erase(std::remove_if(componentEntityList[hash].begin(),
+                                                       componentEntityList[hash].end(),
+                                                       [&entityID](const Entity* o) {
+                                                           return o->entityID == entityID
+                                                                  || o->entityID == INVALID_ID;
+                                                       }),
+                                        componentEntityList[hash].end());
     }
-    template<typename C> void componentRemoved(Entity* entity) {
+    template<typename C>
+    void componentRemoved(Entity* entity) {
         Hash hash = getComponentHash<C>();
         componentRemoved(hash, entity);
     }
-    template<typename C> void componentAdded(Entity* entity) {
+    template<typename C>
+    void componentAdded(Entity* entity) {
         Hash hash = getComponentHash<C>();
         componentEntityList[hash].push_back(entity);
     }
@@ -77,12 +92,13 @@ struct ECS : public System {
             return;
 
         // deallocate the entity
-        delete entities[id];
+        // delete entities[id];
         // this also called the deallocation for the components
         entities[id] = nullptr;
     }
     void destroy(Entity* entity) {
-        if(entity == nullptr) return;
+        if (entity == nullptr)
+            return;
         destroy(entity->entityID);
     }
     void destroyAll() {
@@ -91,19 +107,22 @@ struct ECS : public System {
         }
         entities.clear();
     }
-    template<typename K, typename... R> EntitySubSet<K, R...> each() {
+    template<typename K, typename... R>
+    EntitySubSet<K, R...> each() {
         return EntitySubSet<K, R...> {&componentEntityList[getComponentHash<K>()]};
     }
-    template<typename K, typename...R> Entity* first(){
-        for(Entity* entity:componentEntityList[getComponentHash<K>()]){
-            if(entity->has<K,R...>()){
+    template<typename K, typename... R>
+    Entity* first() {
+        for (Entity* entity : componentEntityList[getComponentHash<K>()]) {
+            if (entity->has<K, R...>()) {
                 return entity;
             }
         }
         return nullptr;
     }
 
-    template<typename Event> void              addEventListener(EventListener<Event>* listener) {
+    template<typename Event>
+    void addEventListener(EventListener<Event>* listener) {
         // check if there already exists an event listener of the same kind
         Hash hash = getComponentHash<Event>();
         if (eventListener.find(hash) == eventListener.end()) {
@@ -111,7 +130,8 @@ struct ECS : public System {
         }
         eventListener[hash].push_back(listener);
     }
-    template<typename Event> void emitEvent(const Event& event) {
+    template<typename Event>
+    void emitEvent(const Event& event) {
         Hash hash = getComponentHash<Event>();
         if (eventListener.find(hash) == eventListener.end())
             return;
@@ -135,9 +155,9 @@ struct ECS : public System {
     }
     friend std::ostream& operator<<(std::ostream& os, const ECS& ecs1) {
 
-        for(const auto& h:ecs1.componentEntityList){
+        for (const auto& h : ecs1.componentEntityList) {
             os << "key=" << std::setw(20) << h.first.hash_code() << "  ";
-            for(auto k:h.second){
+            for (auto k : h.second) {
                 os << " | " << std::setw(10) << k;
             }
             os << std::endl;

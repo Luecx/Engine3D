@@ -6,13 +6,11 @@
 #define ENGINE3D_SRC_RENDER_SHADOW_SHADOWSYSTEM_H_
 
 #include "../../ecs/system.h"
-#include "../../model/RawModel.h"
+#include "../../resources/RawModel.h"
 #include "../RenderSystem.h"
 #include "ShadowShader.h"
 
-class ShadowSystem : public RenderSystem<ShadowShader>, public ecs::System{
-    private:
-    void prepareModel(RawModel& rawModel);
+class ShadowSystem : public RenderSystem<ShadowShader> {
     public:
     void process(ecs::ECS* ecs, double delta) override;
     void render(ecs::ECS* ecs) override;

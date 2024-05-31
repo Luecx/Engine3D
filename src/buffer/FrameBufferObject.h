@@ -5,6 +5,7 @@
 #ifndef ENGINE3D_SRC_BUFFER_FRAMEBUFFEROBJECT_H_
 #define ENGINE3D_SRC_BUFFER_FRAMEBUFFEROBJECT_H_
 
+#include "../core/glerror.h"
 #include "../glad.h"
 
 #include <GLFW/glfw3.h>
@@ -26,6 +27,7 @@ struct FrameBufferObject {
     virtual ~FrameBufferObject() {
         if (cleanUp) {
             glDeleteFramebuffers(1, &fbo);
+            GL_ERROR_CHECK();
             for (auto h : attachments) {
                 glDeleteTextures(1, &h);
             }

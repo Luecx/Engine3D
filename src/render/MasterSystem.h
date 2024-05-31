@@ -7,8 +7,10 @@
 
 #include "../components/LightSource.h"
 #include "../control/ControlSystem.h"
+#include "../core/glerror.h"
 #include "../ecs/ecs.h"
 #include "../glad.h"
+#include "../resources/ResourceManager.h"
 #include "entities/EntitySystem.h"
 #include "normals/NormalSystem.h"
 #include "shadow/ShadowSystem.h"
@@ -23,9 +25,12 @@ class MasterSystem {
     GLFWwindow*  window;
 
     // list of systems which can be used
-    ShadowSystem  shadowSystem;
-    EntitySystem  entitySystem;
-    NormalSystem  normalSystem;
+    ShadowSystem shadowSystem;
+    EntitySystem entitySystem;
+    NormalSystem normalSystem;
+
+    // resource manager
+    ResourceManager resourceManager;
 
     // list of basic systems which work in the background
     ControlSystem controlSystem;
@@ -46,7 +51,7 @@ class MasterSystem {
 
         /* Make the window's context current */
         glfwMakeContextCurrent(window);
-//        glfwSwapInterval( 0 );
+        //        glfwSwapInterval( 0 );
 
         if (!gladLoadGLLoader((GLADloadproc) glfwGetProcAddress)) {
             std::cout << "Failed to initialize OpenGL context" << std::endl;
@@ -86,19 +91,26 @@ class MasterSystem {
             double currentTime = glfwGetTime();
             /* Render here */
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-            //        system.render(camera, &ecs);
 
             ecs.process(currentTime - previousTime);
-
-
+            GL_ERROR_CHECK();
 
             /* Swap front and back buffers */
             glfwSwapBuffers(window);
+            GL_ERROR_CHECK();
 
             /* Poll for and process events */
             glfwPollEvents();
+            GL_ERROR_CHECK();
             previousTime = currentTime;
         }
+
+        GL_ERROR_CHECK();
+        ecs.destroy();
+        GL_ERROR_CHECK();
+
+        resourceManager.remove_all();
+
         glfwTerminate();
     }
 };

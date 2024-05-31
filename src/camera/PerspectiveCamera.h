@@ -5,11 +5,11 @@
 #ifndef ENGINE3D_SRC_CAMERA_PERSPECTIVECAMERA_H_
 #define ENGINE3D_SRC_CAMERA_PERSPECTIVECAMERA_H_
 
+#include "../math/Projection.h"
 #include "Camera.h"
 
 #include <GLFW/glfw3.h>
 #include <iostream>
-#include "../math/Projection.h"
 
 class PerspectiveCamera : public Camera {
     public:
@@ -21,7 +21,6 @@ class PerspectiveCamera : public Camera {
     void  recomputeProjectionMatrix() {
         projectionMatrix = perspective(fov, aspectRatio, nearPlane, farPlane);
     }
-
 };
 
 #endif    // ENGINE3D_SRC_CAMERA_PERSPECTIVECAMERA_H_

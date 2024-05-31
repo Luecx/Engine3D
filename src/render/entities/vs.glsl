@@ -5,18 +5,16 @@ layout(location = 1) in vec2 textureCoords;
 layout(location = 2) in vec3 normal;
 layout(location = 3) in vec3 tangent;
 
-
-out VS_OUT{
+out VS_OUT {
     vec3 fragPos;
+    vec3 fragNormal;
+    vec3 fragTangent;
+    vec3 fragBitangent;
     vec4 fragPosLightSpace;
     vec2 texCoords;
-    vec3 tangentCameraPos;
-    vec3 tangentFragPos;
-    vec3 tangentLightPos[4];
 } vsOut;
 
-
-struct LightSource{
+struct LightSource {
     vec3 position;
     vec3 color;
     vec3 factors;
@@ -34,28 +32,18 @@ uniform int lightCount;
 
 void main()
 {
+    vec4 worldPosition = transformationMatrix * vec4(position, 1.0);
+    vec3 N = normalize(mat3(transformationMatrix) * normal); // Correct normal transformation
+    vec3 T = normalize(mat3(transformationMatrix) * tangent); // Correct tangent transformation
+    T = normalize(T - dot(T, N) * N); // Re-orthogonalize T with respect to N
+    vec3 B = cross(N, T); // Retrieve perpendicular vector B with the cross product of T and N
 
-    vec4 worldPosition          = transformationMatrix * vec4(position, 1.0);
-    mat4 modelViewMatrix        = viewMatrix * transformationMatrix;
-
-    gl_Position         = projectionMatrix * viewMatrix * worldPosition;
-
-    vec3 T = normalize((transformationMatrix * vec4(tangent, 0.0)).xyz);
-    vec3 N = normalize((transformationMatrix * vec4(normal, 0.0)).xyz);
-    // re-orthogonalize T with respect to N
-    T = normalize(T - dot(T, N) * N);
-    // then retrieve perpendicular vector B with the cross product of T and N
-    vec3 B = cross(N, T);
-
-    mat3 TBN = transpose(mat3(T, B, N));
-
-    for (int i=0;i<lightCount;i++){
-        vsOut.tangentLightPos[i] = TBN * (lights[i].position - worldPosition.xyz);
-    }
-
-    vsOut.tangentCameraPos  = TBN * ( cameraPosition.xyz - worldPosition.xyz);
-    vsOut.tangentFragPos    = TBN * ( worldPosition.xyz);
-    vsOut.fragPos           =       ( worldPosition.xyz);
-    vsOut.texCoords         =       ( textureCoords);
+    vsOut.fragPos = worldPosition.xyz;
+    vsOut.fragNormal = N;
+    vsOut.fragTangent = T;
+    vsOut.fragBitangent = B;
+    vsOut.texCoords = textureCoords;
     vsOut.fragPosLightSpace = shadowViewMatrix * worldPosition;
+
+    gl_Position = projectionMatrix * viewMatrix * worldPosition;
 }

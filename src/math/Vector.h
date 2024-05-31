@@ -12,7 +12,8 @@
 #include <iomanip>
 #include <ostream>
 
-template<int M> class Vector {
+template<int M>
+class Vector {
 
     private:
     Precision values[M] {};
@@ -36,8 +37,12 @@ template<int M> class Vector {
             values[2] = 1;
         }
     };
-    Vector(Vector&& other) { std::memcpy(values, other.values, sizeof(Precision) * M); }
-    Vector(const Vector& other) { std::memcpy(values, other.values, sizeof(Precision) * M); }
+    Vector(Vector&& other) {
+        std::memcpy(values, other.values, sizeof(Precision) * M);
+    }
+    Vector(const Vector& other) {
+        std::memcpy(values, other.values, sizeof(Precision) * M);
+    }
 
     void normalise() {
         Precision l = length();
@@ -46,24 +51,27 @@ template<int M> class Vector {
         }
         (*this) *= 1.0 / l;
     }
-    void      clear() { std::memset(values, 0, M * sizeof(Precision)); }
-    Precision length() { return sqrt((*this) * (*this)); }
+    void clear() {
+        std::memset(values, 0, M * sizeof(Precision));
+    }
+    Precision length() {
+        return sqrt((*this) * (*this));
+    }
     Precision operator*(const Vector<M>& other) {
         Precision sum = 0;
         for (int i = 0; i < M; i++) {
-            sum += other[i] * (*this) (i);
+            sum += other[i] * (*this)(i);
         }
         return sum;
     }
 
-    Vector<M> cross(const Vector<M>& other) const{
+    Vector<M> cross(const Vector<M>& other) const {
         static_assert(M == 3);
-        Vector<M> res{};
+        Vector<M> res {};
 
-
-        res[0] =   (*this)[1] * other[2] - (*this)[2] * other[1];
+        res[0] = (*this)[1] * other[2] - (*this)[2] * other[1];
         res[1] = -((*this)[0] * other[2] - (*this)[2] * other[0]);
-        res[2] =   (*this)[0] * other[1] - (*this)[1] * other[0];
+        res[2] = (*this)[0] * other[1] - (*this)[1] * other[0];
 
         return res;
     }
@@ -79,7 +87,7 @@ template<int M> class Vector {
         }
         return *this;
     }
-    Vector<M> operator+(const Vector<M>& other) const{
+    Vector<M> operator+(const Vector<M>& other) const {
         Vector<M> vec {*this};
         vec += other;
         return vec;
@@ -90,7 +98,7 @@ template<int M> class Vector {
         }
         return *this;
     }
-    Vector<M> operator-(const Vector<M>& other) const{
+    Vector<M> operator-(const Vector<M>& other) const {
         Vector<M> vec {*this};
         vec -= other;
         return vec;
@@ -111,10 +119,18 @@ template<int M> class Vector {
         return *this;
     }
 
-    Precision&           operator()(int index) { return values[index]; }
-    Precision&           operator[](int index) { return values[index]; }
-    Precision            operator()(int index) const { return values[index]; }
-    Precision            operator[](int index) const { return values[index]; }
+    Precision& operator()(int index) {
+        return values[index];
+    }
+    Precision& operator[](int index) {
+        return values[index];
+    }
+    Precision operator()(int index) const {
+        return values[index];
+    }
+    Precision operator[](int index) const {
+        return values[index];
+    }
 
     friend std::ostream& operator<<(std::ostream& os, const Vector<M>& matrix) {
         os << std::fixed << std::setprecision(5);

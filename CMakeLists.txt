@@ -17,8 +17,8 @@ add_executable(Engine3D
         src/math/Vector.cpp
         src/math/Vector.h
         src/math/Precision.h
-        src/model/RawModel.cpp
-        src/model/RawModel.h
+        src/resources/RawModel.cpp
+        src/resources/RawModel.h
         src/loader/Loader.cpp
         src/loader/Loader.h
         src/loader/TextureLoader.h
@@ -39,16 +39,10 @@ add_executable(Engine3D
         src/render/entities/EntitySystem.h
         src/render/normals/NormalShader.h
         src/render/normals/NormalSystem.h
-        src/material/Texture.cpp
-        src/material/Texture.h
-        src/material/ColorMap.h
-        src/material/ColorMap.cpp
-        src/material/NormalMap.h
-        src/material/NormalMap.cpp
-        src/material/SpecularMap.h
-        src/material/SpecularMap.cpp
-        src/material/ParallaxMap.h
-        src/material/ParallaxMap.cpp
+        src/resources/Texture.cpp
+        src/resources/Texture.h
+        src/material/MaterialMap.h
+        src/material/MaterialMap.cpp
         src/camera/OrthogonalCamera.cpp
         src/camera/OrthogonalCamera.h
         src/render/MasterSystem.cpp
@@ -77,7 +71,7 @@ add_executable(Engine3D
         src/math/Projection.h
         src/math/Projection.cpp
         src/math/angle.cpp
-        src/config.h
+        src/core/config.h
         src/render/entities/EntitySystem.cpp
         src/render/entities/EntityShader.cpp
         src/render/shadow/ShadowShader.cpp
@@ -86,16 +80,32 @@ add_executable(Engine3D
         src/render/shadow/ShadowSystem.h
         src/buffer/FrameBufferObject.cpp
         src/buffer/FrameBufferObject.h
-        src/components/ShadowCaster.cpp src/components/ShadowCaster.h)
+        src/components/ShadowCaster.cpp src/components/ShadowCaster.h
+        src/gldata/GLData.cpp
+        src/gldata/GLData.h
+        src/gldata/TextureID.cpp
+        src/gldata/TextureID.h
+        src/gldata/VAOId.cpp
+        src/gldata/VAOId.h
+        src/gldata/VBOId.cpp
+        src/gldata/VBOId.h
+        src/core/glerror.h
+        src/resources/ResourceManager.cpp
+        src/resources/ResourceManager.h
+        src/resources/Resource.cpp
+        src/resources/Resource.h
+)
 
+
+# ignore and hide all warnings
 
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DDOUBLE_PRECISION")
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -Wshadow")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -W")
 
-target_link_libraries(Engine3D glfw)
-target_link_libraries(Engine3D OpenGL::GL)
-target_link_libraries(Engine3D -static-libgcc -static-libstdc++)
+target_link_libraries(Engine3D glfw OpenGL::GL)
 
+# debugging symbols
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g")
 
-set(CMAKE_EXE_LINKER_FLAGS " -static")
+# set(CMAKE_EXE_LINKER_FLAGS " -static")

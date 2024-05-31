@@ -5,8 +5,8 @@
 #ifndef ENGINE3D_SRC_RENDER_IMPLEMENTATIONS_ENTITIES_ENTITYSHADER_H_
 #define ENGINE3D_SRC_RENDER_IMPLEMENTATIONS_ENTITIES_ENTITYSHADER_H_
 
-#include "../../config.h"
-#include "../../material/NormalMap.h"
+#include "../../core/config.h"
+#include "../../material/MaterialMap.h"
 #include "../ShaderProgram.h"
 
 class EntityShader : public ShaderProgram {
@@ -41,9 +41,10 @@ class EntityShader : public ShaderProgram {
     void getAllUniformLocations() override;
     void bindAttributes() override;
     void connectAllTextureUnits() override;
+
     public:
-    void loadTransformationMatrix(Matrix<4,4> &transformationMatrix);
-    void loadVPMatrix(Matrix<4,4> &viewMatrix,Matrix<4,4> &projectionMatrix);
+    void loadTransformationMatrix(Matrix<4, 4>& transformationMatrix);
+    void loadVPMatrix(Matrix<4, 4>& viewMatrix, Matrix<4, 4>& projectionMatrix);
     void loadShadowView(bool useShadows, Matrix<4, 4>& viewMatrix);
     void loadCameraPosition(Vector<3>& position);
     void loadLightCount(int count);

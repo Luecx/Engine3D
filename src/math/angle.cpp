@@ -29,6 +29,8 @@ Vector<3> matrixToDegrees(Matrix<4, 4>& m) {
         }
     }
 
-    Vector<3> angle {(Precision) toDegrees(aN1), (Precision) toDegrees(bN1), (Precision) toDegrees(cN1)};
+    Vector<3> angle {(Precision) toDegrees(aN1),
+                     (Precision) toDegrees(bN1),
+                     (Precision) toDegrees(cN1)};
     return angle;
 }

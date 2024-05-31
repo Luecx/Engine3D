@@ -9,7 +9,8 @@ namespace ecs {
 
 struct EventBaseListener {};
 
-template<typename Event> struct EventListener : public EventBaseListener {
+template<typename Event>
+struct EventListener : public EventBaseListener {
     virtual void receive(const Event& event) = 0;
 };
 

@@ -17,8 +17,8 @@ class Camera : public ComplexTransformation {
     bool         viewMatrixOutdated       = true;
     bool         projectionMatrixOutdated = true;
 
-    Matrix<4, 4> viewMatrix{};
-    Matrix<4, 4> projectionMatrix{};
+    Matrix<4, 4> viewMatrix {};
+    Matrix<4, 4> projectionMatrix {};
 
     virtual void recomputeProjectionMatrix() = 0;
     void         absoluteDataChangedNotification() override;

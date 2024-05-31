@@ -5,12 +5,13 @@
 #ifndef ECS_ECS_ASSIGN_H_
 #define ECS_ECS_ASSIGN_H_
 
-#include "entity.h"
 #include "ecs.h"
+#include "entity.h"
 
-namespace ecs{
+namespace ecs {
 
-template<typename T, typename... Args> inline void Entity::assign(Args&&... args) {
+template<typename T, typename... Args>
+inline void Entity::assign(Args&&... args) {
     T t {args...};
 
     if (has<T>()) {
@@ -24,19 +25,20 @@ template<typename T, typename... Args> inline void Entity::assign(Args&&... args
         ecs->componentAdded<T>(this);
     }
 }
-template<typename T> inline void Entity::remove() {
+template<typename T>
+inline void Entity::remove() {
     if (!has<T>())
         return;
     Hash  hash      = getComponentHash<T>();
     auto* container = components.at(hash);
-    delete container;
+    // delete container;
     components.erase(hash);
     ecs->componentRemoved<T>(this);
 }
 inline void Entity::removeAll() {
     for (auto pair : components) {
         ecs->componentRemoved(pair.first, this);
-        delete pair.second;
+        // delete pair.second;
     }
 
     components.clear();
@@ -44,7 +46,6 @@ inline void Entity::removeAll() {
 inline void Entity::destroy() {
     ecs->destroy(this->entityID);
 }
-}
-
+}    // namespace ecs
 
 #endif    // ECS_ECS_ASSIGN_H_
